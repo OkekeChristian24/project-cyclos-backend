@@ -46,20 +46,13 @@ app.use(passport.session());
 app.use(cors({ origin: "*" }));
 app.use('/uploads', express.static('uploads'));
 
-// Routes
-const userRouter = require('./api/users/user.router');
-const shopRouter = require('./api/shops/shop.router');
-const adminRouter = require('./api/admin/admin.router');
-const categoryRouter = require('./api/categories/category.router');
-const productRouter = require('./api/products/product.router');
-const orderRouter = require('./api/orders/order.router');
 // Routing
-app.use('/api/users', userRouter);
-app.use('/api/shops', shopRouter);
-app.use('/api/admin', adminRouter);
-app.use('/api/categories', categoryRouter);
-app.use('/api/products', productRouter);
-app.use('/api/orders', orderRouter);
+app.use('/api/users', require('./api/users/user.router'));
+app.use('/api/shops', require('./api/shops/shop.router'));
+app.use('/api/admin', require('./api/admin/admin.router'));
+app.use('/api/categories', require('./api/categories/category.router'));
+app.use('/api/products', require('./api/products/product.router'));
+app.use('/api/orders', require('./api/orders/order.router'));
 
 
 

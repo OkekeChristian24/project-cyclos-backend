@@ -46,6 +46,19 @@ module.exports = {
             }
         );
     },
+    getUserOrders: (id, callBack) => {
+        pool.query(
+            `SELECT * FROM orders WHERE user_id = ?`,
+            [id],
+            (error, results, fields) => {
+                if(error){
+                    return callBack(error);
+                }
+                return callBack(null, results);
+            }
+        
+        );
+    },
     getOrderById: (id, callBack) => {
         pool.query(
             // `select id, shop_id, name, created_at from categories where id = ?`,

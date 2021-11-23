@@ -1,8 +1,9 @@
-const { validateCreate } = require('../../validation/orderValidation');
+const { validateCreate, validateEdit } = require('../../validation/orderValidation');
 const { 
     createOrder,
     getOrders,
     getShopOrders,
+    getUserOrders,
     getOrderById,
     updateOrder,
     deleteOrder,
@@ -12,9 +13,10 @@ const { checkToken } = require('../../auth/token_validation');
 
 router.post('/', validateCreate, createOrder);
 router.get('/', getOrders);
-router.get('/shop/:id', checkToken, getShopOrders);
-router.get('/:id', checkToken, getOrderById);
-router.put('/:id', checkToken, updateOrder);
-router.delete('/:id', checkToken, deleteOrder);
+// router.get('/shop/:id', getShopOrders);
+router.get('/user/:id', getUserOrders);
+router.get('/:id', getOrderById);
+router.put('/:id', validateEdit, updateOrder);
+router.delete('/:id', deleteOrder);
 
 module.exports = router;

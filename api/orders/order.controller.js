@@ -3,6 +3,7 @@ const {
     create,
     getOrders,
     getShopOrders,
+    getUserOrders,
     getOrderById,
     updateOrder,
     deleteOrder,
@@ -10,7 +11,7 @@ const {
 
 module.exports = {
     createOrder: (req, res) => {
-        console.log(req);
+        console.log("createOrder, req.body: ", req.body);
         const errorsArr = [];
         const validationErrors = validationResult(req);
         if(!validationErrors.isEmpty()){
@@ -79,6 +80,28 @@ module.exports = {
                 return res.json({
                     success: 0,
                     message: 'No order found'
+                });
+            }
+            return res.json({
+                success: 1,
+                data: results
+            });
+        });
+    },
+    getUserOrders: (req, res) => {
+        const id = req.params.id;
+        getUserOrders(id, (err, results) => {
+            if(err){
+                console.log(err);
+                return res.json({
+                    success: 0,
+                    message: 'Database query error'
+                });
+            }
+            if(!results){
+                return res.json({
+                    success: 0,
+                    message: 'No order available'
                 });
             }
             return res.json({
