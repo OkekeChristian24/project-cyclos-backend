@@ -1,0 +1,14 @@
+GET http://localhost:5000/api/orders
+
+###
+
+POST http://localhost:5000/api/orders
+
+Content-Type: application/json
+{
+    "user_id": 2,
+    "total_amount": 120.33,
+    "payment_id": 3,
+    "sortedquote_id": 2,
+    "total_items": 2
+}
