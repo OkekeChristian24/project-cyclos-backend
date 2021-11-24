@@ -11,7 +11,6 @@ const {
 
 module.exports = {
     createOrder: (req, res) => {
-        console.log("createOrder, req.body: ", req.body);
         const errorsArr = [];
         const validationErrors = validationResult(req);
         if(!validationErrors.isEmpty()){
@@ -20,7 +19,7 @@ module.exports = {
                 errorsArr.push(eachError.msg);
             });
             // req.flash("errors", errorsArr);
-            return res.status(400).json({
+            return res.json({
                 success: 0,
                 isDataValid: 0,
                 message: errorsArr
@@ -57,7 +56,7 @@ module.exports = {
             if (!results) {
                 return res.json({
                     success: 0,
-                    message: 'No order available'
+                    message: 'Query error'
                 });
             }
             return res.json({
@@ -101,7 +100,7 @@ module.exports = {
             if(!results){
                 return res.json({
                     success: 0,
-                    message: 'No order available'
+                    message: 'Query error'
                 });
             }
             return res.json({
@@ -123,7 +122,7 @@ module.exports = {
             if (!results) {
                 return res.json({
                     success: 0,
-                    message: 'Order not found'
+                    message: 'Query error'
                 });
             }
             return res.json({
@@ -146,7 +145,7 @@ module.exports = {
             if (!results) {
                 return res.json({
                     success: 0,
-                    message: 'Order not found'
+                    message: 'Query error'
                 });
             }
             return res.json({
@@ -160,12 +159,15 @@ module.exports = {
         deleteOrder(id, (err, results) => {
             if (err) {
                 console.log(err);
-                return;
+                return res.json({
+                    success: 0,
+                    message: 'Database query error'
+                });
             }
             if (!results) {
                 return res.json({
                     success: 0,
-                    message: 'Order not found'
+                    message: 'Query error'
                 });
             }
             return res.json({

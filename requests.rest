@@ -12,3 +12,15 @@ Content-Type: application/json
     "sortedquote_id": 2,
     "total_items": 2
 }
+
+###
+POST http://localhost:5000/api/unsorted/
+
+Content-Type: application/json
+
+{
+    "user_id": 2,
+    "sorter_id": 2,
+    "total_items": 3,
+    "total_amount": 3490.42
+}

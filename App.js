@@ -48,10 +48,12 @@ app.use('/uploads', express.static('uploads'));
 
 // Routing
 app.use('/api/users', require('./api/users/user.router'));
-app.use('/api/shops', require('./api/shops/shop.router'));
+// app.use('/api/shops', require('./api/shops/shop.router'));
 app.use('/api/admin', require('./api/admin/admin.router'));
-app.use('/api/categories', require('./api/categories/category.router'));
-app.use('/api/products', require('./api/products/product.router'));
+// app.use('/api/categories', require('./api/categories/category.router'));
+// app.use('/api/products', require('./api/products/product.router'));
+app.use('/api/unsorted', require('./api/unsortedQuotations/unsortedQuotation.router'));
+app.use('/api/sorted', require('./api/sortedQuotations/sortedQuotation.router'));
 app.use('/api/orders', require('./api/orders/order.router'));
 
 

@@ -1,3 +1,5 @@
+const { validateCreate, validateEdit } = require('../../validation/sortedValidation');
+
 const {
     createSortedQuotation,
     getSortedQuotations,
@@ -11,12 +13,12 @@ const router = require('express').Router();
 const { checkToken } = require('../../auth/token_validation');
 
 
-router.post('/', createSortedQuotation);
-router.get('/', checkToken, getSortedQuotations);
-router.get('/:id', checkToken, getSortedQuotationById);
-router.get('/user/:id', checkToken, getSortedQuotationByUser);
-router.get('/sorter/:id', checkToken, getSortedQuotationBySorter);
-router.put('/:id', checkToken, updateSortedQuotation);
-router.delete('/:id', checkToken, deleteSortedQuotation);
+router.post('/', validateCreate, createSortedQuotation);
+router.get('/', getSortedQuotations);
+router.get('/:id', getSortedQuotationById);
+router.get('/user/:id', getSortedQuotationByUser);
+router.get('/sorter/:id', getSortedQuotationBySorter);
+router.put('/:id', validateEdit, updateSortedQuotation);
+router.delete('/:id', deleteSortedQuotation);
 
 module.exports = router;
