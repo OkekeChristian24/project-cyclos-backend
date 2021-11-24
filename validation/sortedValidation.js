@@ -1,4 +1,4 @@
-const { body } = require('express-validator');
+const { body, check } = require('express-validator');
 
 const validateCreate = [
 
@@ -9,6 +9,7 @@ const validateCreate = [
             if(!(Number.isInteger(value) && value > 0)){
                 throw new Error('Invalid user id');
             }
+            return true;
         }
     ),
 
@@ -19,6 +20,7 @@ const validateCreate = [
             if(!(Number.isInteger(value) && value > 0)){
                 throw new Error('Invalid sorter id');
             }
+            return true;
         }
     ),
 
@@ -29,6 +31,7 @@ const validateCreate = [
             if(!(Number.isInteger(value) && value > 0)){
                 throw new Error('Invalid total item value');
             }
+            return true;
         }
     ),
 
@@ -39,6 +42,7 @@ const validateCreate = [
             if(!(!isNaN(value)  && value > 0)){
                 throw new Error('Invalid total amount')
             }
+            return true;
         }
     )
 
@@ -47,43 +51,47 @@ const validateCreate = [
 
 const validateEdit = [
 
-    body("user_id", "No user id")
-        .exists({checkFalsy: true})
-        .not().isEmpty()
-        .custom((value, { req }) => {
-            if(!(Number.isInteger(value) && value > 0)){
-                throw new Error('Invalid user id');
-            }
-        }
-    ),
+    // body("user_id", "No user id")
+    //     .exists({checkFalsy: true})
+    //     .not().isEmpty()
+    //     .custom((value, { req }) => {
+    //         if(!(Number.isInteger(value) && value > 0)){
+    //             throw new Error('Invalid user id');
+    //         }
+    //     }
+    // ),
 
-    body("sorter_id", "No sorter id")
-        .exists({checkFalsy: true})
-        .not().isEmpty()
-        .custom((value, { req }) => {
-            if(!(Number.isInteger(value) && value > 0)){
-                throw new Error('Invalid sorter id');
-            }
-        }
-    ),
+    // body("sorter_id", "No sorter id")
+    //     .exists({checkFalsy: true})
+    //     .not().isEmpty()
+    //     .custom((value, { req }) => {
+    //         if(!(Number.isInteger(value) && value > 0)){
+    //             throw new Error('Invalid sorter id');
+    //         }
+    //     }
+    // ),
 
     body("total_items", "No number of total items")
-        .exists({checkFalsy: true})
-        .not().isEmpty()
+        .exists()
+        .not().isEmpty({checkFalsy: true, checkNull: true})
         .custom((value, { req }) => {
             if(!(Number.isInteger(value) && value > 0)){
                 throw new Error('Invalid total item value');
             }
+            return true;
+
         }
     ),
 
     body("total_amount", "No total amount")
-        .exists({checkFalsy: true})
+        .exists({checkFalsy: true, checkNull: true})
         .not().isEmpty()
         .custom((value, { req }) => {
             if(!(!isNaN(value)  && value > 0)){
                 throw new Error('Invalid total amount')
             }
+            return true;
+
         }
     )
 

@@ -10,6 +10,7 @@ const validateCreate = [
             if(!(Number.isInteger(value) && value > 0)){
                 throw new Error('Invalid user id');
             }
+            return true;
         }
     ),
 
@@ -20,6 +21,7 @@ const validateCreate = [
             if(!(Number.isInteger(value) && value > 0)){
                 throw new Error('Invalid sorter id');
             }
+            return true;
         }
     ),
 
@@ -30,6 +32,7 @@ const validateCreate = [
             if(!(Number.isInteger(value) && value > 0)){
                 throw new Error('Invalid total item value');
             }
+            return true;
         }
     )
 
@@ -39,15 +42,16 @@ const validateCreate = [
 
 const validateEdit = [
     
-    body("user_id", "No user id")
-        .exists({checkFalsy: true})
-        .not().isEmpty()
-        .custom((value, { req }) => {
-            if(!(Number.isInteger(value) && value > 0)){
-                throw new Error('Invalid user id');
-            }
-        }
-    ),
+    // body("user_id", "No user id")
+    //     .exists({checkFalsy: true})
+    //     .not().isEmpty()
+    //     .custom((value, { req }) => {
+    //         if(!(Number.isInteger(value) && value > 0)){
+    //             throw new Error('Invalid user id');
+    //         }
+    //         return true;
+    //     }
+    // ),
 
     body("sorter_id", "No sorter id")
         .exists({checkFalsy: true})
@@ -56,6 +60,7 @@ const validateEdit = [
             if(!(Number.isInteger(value) && value > 0)){
                 throw new Error('Invalid sorter id');
             }
+            return true;
         }
     ),
 
@@ -66,6 +71,7 @@ const validateEdit = [
             if(!(Number.isInteger(value) && value > 0)){
                 throw new Error('Invalid total item value');
             }
+            return true;
         }
     )
 

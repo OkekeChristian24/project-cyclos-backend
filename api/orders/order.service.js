@@ -3,7 +3,7 @@ const { pool } = require('../../config/database');
 module.exports = {
     create: (data, callBack) => {
         pool.query(
-            'insert into orders(user_id, total_amount, payment_id, sortedquote_id, total_items) values(?, ?, ?, ?, ?)',
+            'INSERT INTO orders(user_id, total_amount, payment_id, sortedquote_id, total_items) VALUES(?, ?, ?, ?, ?)',
             [ 
                 data.user_id,
                 data.total_amount,
@@ -62,22 +62,24 @@ module.exports = {
     getOrderById: (id, callBack) => {
         pool.query(
             // `select id, shop_id, name, created_at from categories where id = ?`,
-            `select orders.id, users.username, products.item_name, categories.category_name, shops.shop_name, products.image, orders.quantity, products.price, products.duration, orders.created_at from orders inner join users on orders.user_id = users.id inner join products on orders.product_id = products.id inner join shops on products.shop_id = shops.id inner join categories on products.category_id = categories.id where orders.id= ?`,
+            `SELECT * FROM orders WHERE id = ?`,
             [id],
             (error, results, fields) => {
                 if (error) {
                     return callBack(error);
                 }
-                return callBack(null, results[0]);
+                return callBack(null, results);
             }
         );
     },
     updateOrder: (id, data, callBack) => {
         pool.query(
-            `update orders set product_id = ?, quantity = ? where id = ?`,
+            `UPDATE orders SET total_amount = ?, payment_id = ?, sortedquote_id = ?, total_items = ? WHERE id = ?`,
             [
-                data.product_id,
-                data.quantity,
+                data.total_amount,
+                data.payment_id,
+                data.sortedquote_id,
+                data.total_items,
                 id
             ],
             (error, results, fields) => {
@@ -85,20 +87,20 @@ module.exports = {
                     return callBack(error);
                 }
                 console.log(results);
-                return callBack(null, results[0]);
+                return callBack(null, results);
             }
         );
     },
     deleteOrder: (id, callBack) => {
         pool.query(
-            `delete from orders where id = ?`,
+            `DELETE FROM orders WHERE id = ?`,
             [id],
             (error, results, fields) => {
                 if (error) {
                     return callBack(error);
                 }
-                return callBack(null, results[0]);
+                return callBack(null, results);
             }
         );
-    },
+    }
 };
