@@ -78,7 +78,7 @@ module.exports = {
             if (!results) {
                 return res.json({
                     success: 0,
-                    message: 'No order found'
+                    message: 'Query error'
                 });
             }
             return res.json({
@@ -132,6 +132,19 @@ module.exports = {
         });
     },
     updateOrder: (req, res) => {
+        const errorsArr = [];
+        const validationErrors = validationResult(req);
+        if(!validationErrors.isEmpty()){
+            const errors = Object.values(validationErrors.mapped());
+            errors.forEach(eachError => {
+                errorsArr.push(eachError.msg);
+            });
+            return res.json({
+                success: 0,
+                isDataValid: 0,
+                message: errorsArr
+            });
+        }
         const id = req.params.id;
         const body = req.body;
         updateOrder(id, body, (err, results) => {

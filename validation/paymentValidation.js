@@ -1,128 +1,137 @@
 const { body } = require('express-validator');
 
 const validateCreate = [
-    body("user_id", "No user id")
+    body("order_id", "No order id")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .custom((value, { req }) => {
             if(!(Number.isInteger(value) && value > 0)){
-                throw new Error('Invalid user id');
+                throw new Error('Invalid order id');
             }
 
             return true;
         }
     ),
 
-    body("total_amount", "No total amount")
+    body("amount", "No amount value")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .custom((value, { req }) => {
             if(!(!isNaN(value)  && value > 0)){
-                throw new Error('Invalid total amount')
+                throw new Error('Invalid amount value')
             }
             return true;
         }
     ),
 
-    body("payment_id", "No payment id")
+    body("network_id", "No network id")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .custom((value, { req }) => {
             if(!(Number.isInteger(value) && value > 0)){
-                throw new Error('Invalid payment id');
-            }
-
-            return true;
-        }
-    ),
-
-    body("sortedquote_id", "No sorted quote id")
-        .exists({checkFalsy: true})
-        .not().isEmpty()
-        .custom((value, { req }) => {
-            if(!(Number.isInteger(value) && value > 0)){
-                throw new Error('Invalid sorted quote id');
+                throw new Error('Invalid network id');
             }
 
             return true;
         }
     ),
 
-    body("total_items", "No number of total items")
+    body("asset_id", "No asset id")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .custom((value, { req }) => {
             if(!(Number.isInteger(value) && value > 0)){
-                throw new Error('Invalid total item value');
+                throw new Error('Invalid asset id');
             }
 
             return true;
+        }
+    ),
+
+    body("tx_hash")
+        .exists()
+        .not().isEmpty()
+        .trim()
+        .escape()
+        .custom((value, { req }) => {
+            const txHashRegex = /^0x([A-Fa-f0-9]{64})$/;
+            if(txHashRegex.test(value)){
+                return true;
+            }else{
+                throw new Error('Invalid transaction hash');
+            }
+         
         }
     )
 
 ];
 
 const validateEdit = [
-    body("user_id", "No user id")
+    body("order_id", "No order id")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .custom((value, { req }) => {
             if(!(Number.isInteger(value) && value > 0)){
-                throw new Error('Invalid user id');
+                throw new Error('Invalid order id');
             }
 
             return true;
         }
     ),
 
-    body("total_amount", "No total amount")
+    body("amount", "No amount value")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .custom((value, { req }) => {
             if(!(!isNaN(value)  && value > 0)){
-                throw new Error('Invalid total amount')
+                throw new Error('Invalid amount value')
             }
             return true;
         }
     ),
 
-    body("payment_id", "No payment id")
+    body("network_id", "No network id")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .custom((value, { req }) => {
             if(!(Number.isInteger(value) && value > 0)){
-                throw new Error('Invalid payment id');
-            }
-
-            return true;
-        }
-    ),
-
-    body("sortedquote_id", "No sorted quote id")
-        .exists({checkFalsy: true})
-        .not().isEmpty()
-        .custom((value, { req }) => {
-            if(!(Number.isInteger(value) && value > 0)){
-                throw new Error('Invalid sorted quote id');
+                throw new Error('Invalid network id');
             }
 
             return true;
         }
     ),
 
-    body("total_items", "No number of total items")
+    body("asset_id", "No asset id")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .custom((value, { req }) => {
             if(!(Number.isInteger(value) && value > 0)){
-                throw new Error('Invalid total item value');
+                throw new Error('Invalid asset id');
             }
 
             return true;
+        }
+    ),
+
+    body("tx_hash")
+        .exists()
+        .not().isEmpty()
+        .trim()
+        .escape()
+        .custom((value, { req }) => {
+            const txHashRegex = /^0x([A-Fa-f0-9]{64})$/;
+            if(txHashRegex.test(value)){
+                return true;
+            }else{
+                throw new Error('Invalid transaction hash');
+            }
+         
         }
     )
 
 ];
+
 
 module.exports = {
     validateCreate,
