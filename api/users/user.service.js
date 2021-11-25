@@ -1,12 +1,12 @@
 const { pool } = require('../../config/database');
 
 module.exports = {
-    create: (data, callBack) => {
+    registerUser: (data, callBack) => {
         pool.query(
-            'insert into users(username, email, mobile, password) values(?, ?, ?, ?)',
-            [ data.username, data.email, data.mobile, data.password],
+            'INSERT INTO users(wallet) VALUES(?)',
+            [data.wallet],
             (error, results, fields) => {
-                if (error) {
+                if(error){
                     return callBack(error);
                 }
                 return callBack(null, results);
@@ -15,10 +15,10 @@ module.exports = {
     },
     getUsers: callBack => {
         pool.query(
-            `select id, username, email, mobile from users`,
+            'SELECT * FROM users',
             [],
             (error, results, fields) => {
-                if (error) {
+                if(error){
                     return callBack(error);
                 }
                 return callBack(null, results);
@@ -27,56 +27,56 @@ module.exports = {
     },
     getUserById: (id, callBack) => {
         pool.query(
-            `select id, username, email, mobile from users where id = ?`,
+            'SELECT * FROM users WHERE id = ?',
             [id],
             (error, results, fields) => {
-                if (error) {
+                if(error){
                     return callBack(error);
                 }
-                return callBack(null, results[0]);
+                return callBack(null, results);
             }
         );
+        
+    },
+    getUserByWallet: (wallet, callBack) => {
+        pool.query(
+            'SELECT * FROM users WHERE wallet = ?',
+            [wallet],
+            (error, results, fields) => {
+                if(error){
+                    return callBack(error);
+                }
+                return callBack(null, results);
+            }
+        );
+        
     },
     updateUser: (id, data, callBack) => {
         pool.query(
-            `update users set username = ?, email = ?, mobile = ?, password = ? where id = ?`,
+            'UPDATE users SET wallet = ? WHERE id = ?',
             [
-                data.username,
-                data.email,
-                data.mobile,
-                data.password,
+                data.wallet,
                 id
             ],
             (error, results, fields) => {
-                if (error) {
+                if(error){
                     return callBack(error);
                 }
-                return callBack(null, results[0]);
+                return callBack(null, results);
             }
         );
     },
     deleteUser: (id, callBack) => {
         pool.query(
-            `delete from users where id = ?`,
+            'DELETE FROM users WHERE id = ?',
             [id],
             (error, results, fields) => {
-                if (error) {
+                console.log("Results: ", results);
+                if(error){
                     return callBack(error);
                 }
-                return callBack(null, results[0]);
+                return callBack(null, results);
             }
         );
-    },
-    getUserByEmail: (email, callBack) => {
-        pool.query(
-            `select * from users where email = ?`,
-            [email],
-            (error, results, fields) => {
-                if (error) {
-                    return callBack(error);
-                }
-                return callBack(null, results[0]);
-            }
-        );
-    },
+    }
 };

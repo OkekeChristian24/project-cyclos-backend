@@ -1,45 +1,59 @@
-const { 
-    create,
+const { validationResult } = require('express-validator');
+const 
+{
+    registerUser,
     getUsers,
     getUserById,
+    getUserByWallet,
     updateUser,
-    deleteUser,
-    getUserByEmail
- } = require('./user.service');
+    deleteUser
 
-const { genSaltSync, hashSync, compareSync } = require('bcrypt');
-const { sign } = require('jsonwebtoken');
+} = require('./user.service');
+
 
 module.exports = {
-    createUser: (req, res) => {
+    registerUser: (req, res) => {
+        const errorsArr = [];
+        const validationErrors = validationResult(req);
+        if(!validationErrors.isEmpty()){
+            const errors = Object.values(validationErrors.mapped());
+            errors.forEach(eachError => {
+                errorsArr.push(eachError.msg);
+            });
+            return res.json({
+                success: 0,
+                isDataValid: 0,
+                message: errorsArr
+            });
+        }
         const body = req.body;
-        const salt = genSaltSync(10);
-        body.password = hashSync(body.password, salt);
-        create(body, (err, results) => {
-            if (err) {
+        registerUser(body, (err, results) => {
+            if(err){
                 console.log(err);
-                return res.status(500).json({
+                return res.json({
                     success: 0,
-                    message: 'Database connection error'
+                    message: 'Database query error'
                 });
             }
-            return res.status(200).json({
+            return res.json({
                 success: 1,
-                message: "Account created successfully",
-                data: results
+                message: 'Wallet registered'
             });
         });
     },
     getUsers: (req, res) => {
         getUsers((err, results) => {
-            if (err) {
+            if(err){
                 console.log(err);
-                return;
-            }
-            if (!results) {
                 return res.json({
                     success: 0,
-                    message: 'No User not found'
+                    message: 'Database query error'
+                });
+            }
+            if(!results){
+                return res.json({
+                    success: 0,
+                    message: 'Query error'
                 });
             }
             return res.json({
@@ -51,14 +65,39 @@ module.exports = {
     getUserById: (req, res) => {
         const id = req.params.id;
         getUserById(id, (err, results) => {
-            if (err) {
+            if(err){
                 console.log(err);
-                return;
-            }
-            if (!results) {
                 return res.json({
                     success: 0,
-                    message: 'User not found'
+                    message: 'Database query error'
+                });
+            }
+            if(!results){
+                return res.json({
+                    success: 0,
+                    message: 'Query error'
+                });
+            }
+            return res.json({
+                success: 1,
+                data: results
+            });
+        });
+    },
+    getUserByWallet: (req, res) => {
+        const wallet = req.params.wallet;
+        getUserByWallet(wallet, (err, results) => {
+            if(err){
+                console.log(err);
+                return res.json({
+                    success: 0,
+                    message: 'Database query error'
+                });
+            }
+            if(!results){
+                return res.json({
+                    success: 0,
+                    message: 'Query error'
                 });
             }
             return res.json({
@@ -68,14 +107,48 @@ module.exports = {
         });
     },
     updateUser: (req, res) => {
+        const errorsArr = [];
+        const validationErrors = validationResult(req);
+        if(!validationErrors.isEmpty()){
+            const errors = Object.values(validationErrors.mapped());
+            errors.forEach(eachError => {
+                errorsArr.push(eachError.msg);
+            });
+            return res.json({
+                success: 0,
+                isDataValid: 0,
+                message: errorsArr
+            });
+        }
         const id = req.params.id;
         const body = req.body;
-        const salt = genSaltSync(10);
-        body.password = hashSync(body.password, salt);
         updateUser(id, body, (err, results) => {
+            if(err){
+                console.log(err);
+                return res.json({
+                    success: 0,
+                    message: 'Oops something went wrong'
+                });
+            }
+            if(!results){
+                return res.json({
+                    success: 0,
+                    message: 'Query error'
+                });
+            }
+            return res.json({
+                success: 1,
+                message: 'User updated successfully'
+            });
+        });
+
+    },
+    deleteUser: (req, res) => {
+        const id = req.params.id;
+        deleteUser(id, (err, results) => {
             if (err) {
                 console.log(err);
-                return res.status(500).json({
+                return res.json({
                     success: 0,
                     message: 'Oops something went wrong'
                 });
@@ -83,26 +156,7 @@ module.exports = {
             if (!results) {
                 return res.json({
                     success: 0,
-                    message: 'User not found'
-                });
-            }
-            return res.status(200).json({
-                success: 1,
-                message: 'User updated successfully'
-            });
-        });
-    },
-    deleteUser: (req, res) => {
-        const id = req.params.id;
-        deleteUser(id, (err, results) => {
-            if (err) {
-                console.log(err);
-                return;
-            }
-            if (!results) {
-                return res.json({
-                    success: 0,
-                    message: 'User not found'
+                    message: 'Query error'
                 });
             }
             return res.json({
@@ -111,36 +165,4 @@ module.exports = {
             });
         });
     },
-    login: (req, res) => {
-        const body = req.body;
-        getUserByEmail(body.email, (err, results) => {
-            if (err) {
-                console.log(err);
-            }
-            if (!results) {
-                return res.json({
-                    success: 0,
-                    message: 'User not found, please signup to access our services'
-                });
-            }
-            const result = compareSync(body.password, results.password);
-            if (result) {
-                results.password = undefined;
-                const jsontoken = sign({ result: results}, 'qwe1234', {
-                    expiresIn: '24h'
-                });
-                return res.json({
-                    success: 1,
-                    message: 'Login successfully',
-                    token: jsontoken,
-                    data: results
-                });
-            } else {
-                return res.json({
-                    success: 0,
-                    message: 'Email or password incorrect'
-                });
-            }
-        });
-    }
-}
+};

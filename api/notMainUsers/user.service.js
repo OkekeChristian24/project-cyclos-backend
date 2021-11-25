@@ -3,86 +3,79 @@ const { pool } = require('../../config/database');
 module.exports = {
     create: (data, callBack) => {
         pool.query(
-            'INSERT INTO sorters(email, password, first_name, last_name) VALUES(?, ?, ?, ?)',
-            [
-                data.email,
-                data.password,
-                data.first_name,
-                data.last_name,
-            ],
+            'insert into users(username, email, mobile, password) values(?, ?, ?, ?)',
+            [ data.username, data.email, data.mobile, data.password],
             (error, results, fields) => {
-                if(error){
+                if (error) {
                     return callBack(error);
                 }
                 return callBack(null, results);
             }
         );
     },
-    getSorters: callBack => {
+    getUsers: callBack => {
         pool.query(
-            'SELECT * FROM sorters',
+            `select id, username, email, mobile from users`,
             [],
             (error, results, fields) => {
-                if(error){
+                if (error) {
                     return callBack(error);
                 }
                 return callBack(null, results);
             }
-        
         );
     },
-    getSorterById: (id, callBack) => {
+    getUserById: (id, callBack) => {
         pool.query(
-            'SELECT * FROM sorters WHERE id = ?',
+            `select id, username, email, mobile from users where id = ?`,
             [id],
             (error, results, fields) => {
                 if (error) {
                     return callBack(error);
                 }
-                return callBack(null, results);
+                return callBack(null, results[0]);
             }
         );
     },
-    getSorterByEmail: (email, callBack) => {
+    updateUser: (id, data, callBack) => {
         pool.query(
-            'SELECT * FROM sorters WHERE email = ?',
-            [email],
-            (error, results, fields) => {
-                if (error) {
-                    return callBack(error);
-                }
-                return callBack(null, results);
-            }
-        );
-    },
-    updateSorter: (id, data, callBack) => {
-        pool.query(
-            'UPDATE sorters SET password = ?, first_name = ?, last_name = ?, status = ? WHERE id = ?',
+            `update users set username = ?, email = ?, mobile = ?, password = ? where id = ?`,
             [
+                data.username,
+                data.email,
+                data.mobile,
                 data.password,
-                data.first_name,
-                data.last_name,
-                data.status,
                 id
             ],
             (error, results, fields) => {
                 if (error) {
                     return callBack(error);
                 }
-                return callBack(null, results);
+                return callBack(null, results[0]);
             }
         );
     },
-    deleteSorter: (id, callBack) => {
+    deleteUser: (id, callBack) => {
         pool.query(
-            'DELETE FROM sorters WHERE id = ?',
+            `delete from users where id = ?`,
             [id],
             (error, results, fields) => {
-                console.log(results);
                 if (error) {
                     return callBack(error);
                 }
-                return callBack(null, results);
+                return callBack(null, results[0]);
+            }
+        );
+    },
+    getUserByEmail: (email, callBack) => {
+        pool.query(
+            `select * from users where email = ?`,
+            [email],
+            (error, results, fields) => {
+                if (error) {
+                    return callBack(error);
+                }
+                return callBack(null, results[0]);
             }
         );
     },

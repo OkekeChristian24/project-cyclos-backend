@@ -1,3 +1,4 @@
+const { validateCreate, validateEdit } = require('../../validation/paymentValidation');
 const {
     createPayment,
     getPayments,
@@ -10,9 +11,11 @@ const {
 const router = require('express').Router();
 const { checkToken } = require('../../auth/token_validation');
 
-router.post('/', createPayment);
-router.get('/', checkToken, getPayments);
-router.get('/:id', checkToken, getPaymentById);
-router.get('/user/:id', checkToken, getPaymentByUser);
-router.put('/:id', checkToken, updatePayment);
-router.delete('/:id', checkToken, deletePayment);
+router.post('/', validateCreate, createPayment);
+router.get('/', getPayments);
+router.get('/:id', getPaymentById);
+router.get('/user/:id', getPaymentByUser);
+router.put('/:id', validateCreate, updatePayment);
+router.delete('/:id', deletePayment);
+
+module.exports = router;
