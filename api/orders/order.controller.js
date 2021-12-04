@@ -1,3 +1,4 @@
+const async = require('async');
 const { validationResult } = require('express-validator');
 const { 
     create,
@@ -8,6 +9,16 @@ const {
     updateOrder,
     deleteOrder,
  } = require('./order.service');
+
+const {
+    createItem,
+    getOrderItems,
+    getOrderItemById,
+    getItemsByOrderId,
+    updateOrderItem,
+    deleteOrderItem,
+    deleteOrderItemByOrderId
+} = require('../orderItems/orderItem.service');
 
 module.exports = {
     createOrder: (req, res) => {
@@ -30,18 +41,46 @@ module.exports = {
         create(body, (err, results) => {
             if (err) {
                 console.log(err);
-                // req.flash("errors", ["Database connection failed"]);
                 return res.json({
                     success: 0,
                     message: 'Database query error'
                 });
             }
 
-            // req.flash("success", "Order placed successfully");
-            return res.json({
-                success: 1,
-                message: 'Order placed successfully!'
+            const products = body.products;
+            const insertId = results.insertId;
+
+            async.each(products, (product, callBack) => {
+                console.log(product);
+                const data = {
+                    order_id: insertId,
+                    product_link: product.product_link,
+                    quantity: product.quantity,
+                    item_weight: product.item_weight,
+                    price: product.price
+                };
+                createItem(data, (itemErr, itemResult) => {
+                    if(itemErr){
+                        return callBack(itemErr);
+                    }
+                    return callBack(null);
+                });
+            }, (err) => {
+                if(err){
+                    console.log(err);
+                    return res.json({
+                        success: 0,
+                        itemErr: 1,
+                        message: "Item error"
+                    });
+                }
+                return res.json({
+                    success: 1,
+                    message: "Order placed successfully!"
+                });
             });
+            
+
         });
     },
     getOrders: (req, res) => {
@@ -59,10 +98,34 @@ module.exports = {
                     message: 'Query error'
                 });
             }
-            return res.json({
-                success: 1,
-                data: results
+
+            const count = results.length;
+
+            getOrderItems((err, itemResults) => {
+                if(err){
+                    return res.json({
+                        success: 0,
+                        message: 'Item query error'
+                    });
+                }
+
+                const orderResults = results;
+
+                for(let i=0; i<results.length; i++){
+                    
+                    const products = itemResults.filter(item => item.order_id === results[i].id);
+                    orderResults[i].products = products;
+                }
+
+                res.json({
+                    success: 1,
+                    data: orderResults
+                });
+
+                
+
             });
+            
         });
     },
     getShopOrders: (req, res) => {
@@ -81,6 +144,7 @@ module.exports = {
                     message: 'Query error'
                 });
             }
+
             return res.json({
                 success: 1,
                 data: results
@@ -103,9 +167,29 @@ module.exports = {
                     message: 'Query error'
                 });
             }
-            return res.json({
-                success: 1,
-                data: results
+
+            const dupResults = results;
+            async.eachOf(results, (result, index, callBack) => {
+                getItemsByOrderId(result.id, (itemErr, itemResult) => {
+                    if(itemErr){
+                        return callBack(itemErr);
+                    }
+                    dupResults[index].products = itemResult;
+                    return callBack();
+                });
+            }, (err) => {
+                if(err){
+                    console.log(err);
+                    return res.json({
+                        success: 0,
+                        itemError: 1,
+                        message: "Item error"
+                    });
+                }
+                return res.json({
+                    success: 1,
+                    data: dupResults
+                });
             });
         });
     },
@@ -125,10 +209,31 @@ module.exports = {
                     message: 'Query error'
                 });
             }
-            return res.json({
-                success: 1,
-                data: results
+            
+            const dupResults = results;
+            async.eachOf(results, (result, index, callBack) => {
+                getItemsByOrderId(result.id, (itemErr, itemResult) => {
+                    if(itemErr){
+                        return callBack(itemErr);
+                    }
+                    dupResults[index].products = itemResult;
+                    return callBack();
+                });
+            }, (err) => {
+                if(err){
+                    console.log(err);
+                    return res.json({
+                        success: 0,
+                        itemErr: 1,
+                        message: "Item error"
+                    });
+                }
+                return res.json({
+                    success: 1,
+                    data: dupResults
+                });
             });
+            
         });
     },
     updateOrder: (req, res) => {
@@ -161,10 +266,44 @@ module.exports = {
                     message: 'Query error'
                 });
             }
-            return res.json({
-                success: 1,
-                message: 'Order updated successfully'
+
+            const products = body.products;
+
+            async.each(products, (product, callBack) => {
+                console.log(product);
+                const id = product.id;
+                console.log(id);
+                if(!id){
+                    return callBack("Product id error");
+                }
+                const data = {
+                    product_link: product.product_link,
+                    quantity: product.quantity,
+                    item_weight: product.item_weight,
+                    price: product.price
+                };
+
+                updateOrderItem(id, data, (itemErr, itemResult) => {
+                    if(itemErr){
+                        return callBack(itemErr);
+                    }
+                    return callBack();
+                });
+            }, (err) => {
+                if(err){
+                    console.log(err);
+                    return res.json({
+                        success: 0,
+                        itemErr: 1,
+                        message: "Item error"
+                    });
+                }
+                return res.json({
+                    success: 1,
+                    message: "Order updated successfully!"
+                });
             });
+            
         });
     },
     deleteOrder: (req, res) => {
@@ -183,10 +322,22 @@ module.exports = {
                     message: 'Query error'
                 });
             }
-            return res.json({
-                success: 1,
-                data: 'Order deleted successfully'
+
+            deleteOrderItemByOrderId(id, (err, results) => {
+                if(err){
+                    console.log(err);
+                    return res.json({
+                        success: 0,
+                        message: 'Item query error'
+                    });
+                }
+                return res.json({
+                    success: 1,
+                    data: 'Order deleted successfully'
+                });
             });
+
+
         });
     }
 }

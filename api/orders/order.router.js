@@ -14,8 +14,8 @@ const { checkToken } = require('../../auth/token_validation');
 router.post('/', validateCreate, createOrder);
 router.get('/', getOrders);
 // router.get('/shop/:id', getShopOrders);
-router.get('/user/:id', getUserOrders);
 router.get('/:id', getOrderById);
+router.get('/user/:id', getUserOrders);
 router.put('/:id', validateEdit, updateOrder);
 router.delete('/:id', deleteOrder);
 

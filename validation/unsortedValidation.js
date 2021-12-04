@@ -25,6 +25,22 @@ const validateCreate = [
         }
     ),
 
+    body("products.*.product_link", "No product link")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .isURL().withMessage("Invalid Url"),
+
+    body("products.*.quantity", "Specify product quantity")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .custom((value, { req }) => {
+            if(!(Number.isInteger(value) && value > 0)){
+                throw new Error('Invalid product quantity');
+            }
+            return true;
+        }
+    ),
+
     body("total_items", "No number of total items")
         .exists({checkFalsy: true})
         .not().isEmpty()
@@ -59,6 +75,22 @@ const validateEdit = [
         .custom((value, { req }) => {
             if(!(Number.isInteger(value) && value > 0)){
                 throw new Error('Invalid sorter id');
+            }
+            return true;
+        }
+    ),
+
+    body("products.*.product_link", "No product link")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .isURL().withMessage("Invalid Url"),
+
+    body("products.*.quantity", "Specify product quantity")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .custom((value, { req }) => {
+            if(!(Number.isInteger(value) && value > 0)){
+                throw new Error('Invalid product quantity');
             }
             return true;
         }

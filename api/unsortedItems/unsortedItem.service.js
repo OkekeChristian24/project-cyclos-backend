@@ -3,13 +3,11 @@ const { pool } = require('../../config/database');
 module.exports = {
     createItem: (data, callBack) => {
         pool.query(
-            'INSERT INTO order_items(order_id, product_link, quantity, item_weight, price) VALUES(?, ?, ?, ?, ?)',
+            'INSERT INTO unsortedquote_items(unsortedquote_id, product_link, quantity) VALUES(?, ?, ?)',
             [
-                data.order_id,
+                data.unsortedquote_id,
                 data.product_link,
-                data.quantity,
-                data.item_weight,
-                data.price
+                data.quantity
             ],
             (error, results, fields) => {
                 if(error){
@@ -19,9 +17,9 @@ module.exports = {
             }
         );
     },
-    getOrderItems: callBack => {
+    getUnsortedItems: callBack => {
         pool.query(
-            'SELECT * FROM order_items',
+            'SELECT * FROM unsortedquote_items',
             [],
             (error, results, fields) => {
                 if(error){
@@ -31,9 +29,9 @@ module.exports = {
             }
         );
     },
-    getOrderItemById: (id, callBack) => {
+    getUnsortedItemById: (id, callBack) => {
         pool.query(
-            'SELECT * FROM order_items WHERE id = ?',
+            'SELECT * FROM unsortedquote_items WHERE id = ?',
             [id],
             (error, results, fields) => {
                 if(error){
@@ -43,9 +41,9 @@ module.exports = {
             }
         );
     },
-    getItemsByOrderId: (id, callBack) => {
+    getUnsortedItemsByQuoteId: (id, callBack) => {
         pool.query(
-            'SELECT * FROM order_items WHERE order_id = ?',
+            'SELECT * FROM unsortedquote_items WHERE unsortedquote_id = ?',
             [id],
             (error, results, fields) => {
                 if(error){
@@ -55,14 +53,12 @@ module.exports = {
             }
         );
     },
-    updateOrderItem: (id, data, callBack) => {
+    updateUnsortedItem: (id, data, callBack) => {
         pool.query(
-            'UPDATE order_items SET product_link = ?, quantity = ?, item_weight = ?, price = ? WHERE id = ?',
+            'UPDATE unsortedquote_items SET product_link = ?, quantity = ? WHERE id = ?',
             [
                 data.product_link,
                 data.quantity,
-                data.item_weight,
-                data.price,
                 id
             ],
             (error, results, fields) => {
@@ -73,22 +69,10 @@ module.exports = {
             }
         );
     },
-    deleteOrderItem: (id, callBack) => {
+    deleteUnsortedItem: (id, callBack) => {
         pool.query(
-            'DELETE FROM order_items WHERE id = ?',
+            'DELETE FROM unsortedquote_items WHERE id = ?',
             [id],
-            (error, results, fields) => {
-                if(error){
-                    return callBack(error);
-                }
-                return callBack(null, results);
-            }
-        );
-    },
-    deleteOrderItemByOrderId: (orderId, callBack) => {
-        pool.query(
-            'DELETE FROM order_items WHERE order_id = ?',
-            [orderId],
             (error, results, fields) => {
                 if(error){
                     return callBack(error);
@@ -98,3 +82,25 @@ module.exports = {
         );
     }
 };
+
+//unsortedquote_id
+//product_link
+//quantity
+/*
+
+{
+    username: "ekrizz_24",
+    password: "mypassword",
+    products: [
+        {
+            product_link: "",
+            quantity: 2
+        },
+        {
+            product_link: "",
+            quantity: 1
+        }
+    ]
+}
+
+*/
