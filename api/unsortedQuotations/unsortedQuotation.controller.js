@@ -9,8 +9,18 @@ const {
     deleteUnsortedQuotation
 } = require('./unsortedQuotation.service');
 
+const {
+    createItem,
+    getUnsortedItems,
+    getUnsortedItemById,
+    getUnsortedItemsByQuoteId,
+    updateUnsortedItem,
+    deleteUnsortedItem
+} = require('../unsortedItems/unsortedItem.service');
+
 module.exports = {
     createUnsortedQuotation: (req, res) => {
+        console.log("Req body: ", req.body);
         const errorsArr = [];
         const validationErrors = validationResult(req);
         if(!validationErrors.isEmpty()){
@@ -35,6 +45,28 @@ module.exports = {
                 });
             }
 
+
+            // Here, insert the product links
+            // into the unsortedquote_items table
+            const prod_count = body.products.length;
+            for(let i=0; i<prod_count; i++){
+                // Here, call the create fxn in unsorted.controller file
+                const data = {
+                    unsortedquote_id: results.insertId,
+                    product_link: body.products[i].product_link,
+                    quantity: body.products[i].quantity
+                };
+                createItem(data, (itemErr, itemResult) => {
+                    if(itemErr){
+                        console.log(itemErr);
+                        return res.json({
+                            success: 0,
+                            itemError: 1,
+                            message: "Item error"
+                        });
+                    }
+                });
+            }
             return res.json({
                 success: 1,
                 message: 'Quote sent successfully'

@@ -9,6 +9,15 @@ const {
     deleteSortedQuotation
 } = require('./sortedQuotation.service');
 
+const {
+    createItem,
+    getSortedItems,
+    getSortedItemById,
+    getSortedItemsByQuoteId,
+    updateSortedItem,
+    deleteSortedItem
+} = require('../sortedItems/sortedItem.service');
+
 module.exports = {
     createSortedQuotation: (req, res) => {
         const errorsArr = [];
@@ -36,6 +45,29 @@ module.exports = {
                 });
             }
 
+            const prodCount = body.products.length;
+            for(let i=0; i<prodCount; i++){
+                const data = {
+                    sortedquote_id: results.insertId,
+                    product_link: body.products[i].product_link,
+                    quantity: body.products[i].quantity,
+                    item_weight: body.products[i].item_weight,
+                    price: body.products[i].price
+                };
+
+                createItem(data, (itemErr, itemResult) => {
+                    if(itemErr){
+                        console.log(itemErr);
+                        return res.json({
+                            success: 0,
+                            itemErr: 1,
+                            message: "Item error"
+                        });
+                    }
+                });
+
+            }
+
             return res.json({
                 success: 1,
                 message: 'Quote placed successfully!'
@@ -55,6 +87,21 @@ module.exports = {
                 return res.json({
                     success: 0,
                     message: 'Query error'
+                });
+            }
+
+            const prodCount = results.length;
+            for(let i=0; i<prodCount; i++){
+                getSortedItemsByQuoteId(results[i].id, (itemErr, itemResults) => {
+                    if(itemErr){
+                        console.log(itemErr);
+                        return res.json({
+                            success: 0,
+                            itemErr: 1,
+                            message: "Item error"
+                        });
+                    }
+                    results[i].products = itemResults;
                 });
             }
             return res.json({
