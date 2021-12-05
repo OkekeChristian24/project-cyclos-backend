@@ -84,6 +84,18 @@ module.exports = {
                 return callBack(null, results);
             }
         );
+    },
+    deleteSortedItemByQuoteId: (id, callBack) => {
+        pool.query(
+            'DELETE FROM sortedquote_items WHERE sortedquote_id = ?',
+            [id],
+            (error, results, fields) => {
+                if(error){
+                    return callBack(error);
+                }
+                return callBack(null, results);
+            }
+        );
     }
 };
 

@@ -105,6 +105,7 @@ module.exports = {
                 if(err){
                     return res.json({
                         success: 0,
+                        itemErr: 1,
                         message: 'Item query error'
                     });
                 }
@@ -120,9 +121,7 @@ module.exports = {
                 res.json({
                     success: 1,
                     data: orderResults
-                });
-
-                
+                });       
 
             });
             
@@ -144,6 +143,10 @@ module.exports = {
                     message: 'Query error'
                 });
             }
+
+            /*
+            Shops endpoints are on hold for now
+            */
 
             return res.json({
                 success: 1,
@@ -175,7 +178,7 @@ module.exports = {
                         return callBack(itemErr);
                     }
                     dupResults[index].products = itemResult;
-                    return callBack();
+                    return callBack(null);
                 });
             }, (err) => {
                 if(err){

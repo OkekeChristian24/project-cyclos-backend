@@ -19,7 +19,7 @@ module.exports = {
         }else {
             return res.json({
                 success: 0,
-                message: 'Access denied, Not autorised'
+                message: 'Access denied, Not authorised'
             });
         }
     }

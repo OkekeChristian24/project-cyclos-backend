@@ -80,6 +80,18 @@ module.exports = {
                 return callBack(null, results);
             }
         );
+    },
+    deleteUnsortedItemByQuoteId: (id, callBack) => {
+        pool.query(
+            'DELETE FROM unsortedquote_items WHERE unsortedquote_id = ?',
+            [id],
+            (error, results, fields) => {
+                if(error){
+                    return callBack(error);
+                }
+                return callBack(null, results);
+            }
+        );
     }
 };
 

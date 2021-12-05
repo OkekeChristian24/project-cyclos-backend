@@ -3,8 +3,9 @@ const { pool } = require('../../config/database');
 module.exports = {
     create: (data, callBack) => {
         pool.query(
-            'INSERT INTO unsorted_quotations(sorter_id, total_items) VALUES(?, ?)',
+            'INSERT INTO unsorted_quotations(user_id, sorter_id, total_items) VALUES(?, ?, ?)',
             [
+                data.user_id,
                 data.sorter_id,
                 data.total_items
             ],
