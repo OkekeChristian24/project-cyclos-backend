@@ -1,3 +1,4 @@
+const async = require('async');
 const { validationResult } = require('express-validator');
 const {
     create,
@@ -15,7 +16,8 @@ const {
     getUnsortedItemById,
     getUnsortedItemsByQuoteId,
     updateUnsortedItem,
-    deleteUnsortedItem
+    deleteUnsortedItem,
+    deleteUnsortedItemByQuoteId
 } = require('../unsortedItems/unsortedItem.service');
 
 module.exports = {
@@ -45,32 +47,34 @@ module.exports = {
                 });
             }
 
-
-            // Here, insert the product links
-            // into the unsortedquote_items table
-            const prod_count = body.products.length;
-            for(let i=0; i<prod_count; i++){
-                // Here, call the create fxn in unsorted.controller file
+            const insertId = results.insertId;
+            async.each(body.products, (product, callBack) => {
                 const data = {
-                    unsortedquote_id: results.insertId,
-                    product_link: body.products[i].product_link,
-                    quantity: body.products[i].quantity
+                    unsortedquote_id: insertId,
+                    product_link: product.product_link,
+                    quantity: product.quantity
                 };
                 createItem(data, (itemErr, itemResult) => {
                     if(itemErr){
-                        console.log(itemErr);
-                        return res.json({
-                            success: 0,
-                            itemError: 1,
-                            message: "Item error"
-                        });
+                        return callBack(itemErr);
                     }
+                    return callBack(null);
                 });
-            }
-            return res.json({
-                success: 1,
-                message: 'Quote sent successfully'
+            }, (err) => {
+                if(err){
+                    console.log(err);
+                    return res.json({
+                        success: 0,
+                        itemErr: 1,
+                        message: "Item error"
+                    });
+                }
+                return res.json({
+                    success: 1,
+                    message: "Quote sent successfully!"
+                });
             });
+            
         });
     },
     getUnsortedQuotations: (req, res) => {
@@ -88,10 +92,27 @@ module.exports = {
                     message: 'Query error'
                 });
             }
-            return res.json({
-                success: 1,
-                data: results
+
+            getUnsortedItems((itemErr, itemResults) => {
+                if(itemErr){
+                    return res.json({
+                        success: 0,
+                        itemErr: 1,
+                        message: 'Item query error'
+                    });
+                }
+
+                const quoteResults = results;
+                for(let i=0; i<results.length; i++){
+                    const products = itemResults.filter(item => item.unsortedquote_id === results[i].id);
+                    quoteResults[i].products = products;
+                }
+                res.json({
+                    success: 1,
+                    data: quoteResults
+                });
             });
+            
         });
     },
     getUnsortedQuotationByUser: (req, res) => {
@@ -110,9 +131,29 @@ module.exports = {
                     message: 'Query error'
                 });
             }
-            return res.json({
-                success: 1,
-                data: results
+            const quoteResults = results;
+            async.eachOf(results, (result, index, callBack) => {
+                getUnsortedItemsByQuoteId(result.id, (itemErr, itemResults) => {
+                    if(itemErr){
+                        return callBack(itemErr);
+                    }
+                    quoteResults[index].products = itemResults;
+                    return callBack(null);
+                });
+                
+            }, (err) => {
+                if(err){
+                    console.log(err);
+                    return res.json({
+                        success: 0,
+                        itemErr: 1,
+                        message: "Item query error"
+                    });
+                }
+                return res.json({
+                    success: 1,
+                    data: quoteResults
+                });
             });
         });
     },
@@ -132,9 +173,30 @@ module.exports = {
                     message: 'Query error'
                 });
             }
-            return res.json({
-                success: 1,
-                data: results
+
+            const quoteResults = results;
+            async.eachOf(results, (result, index, callBack) => {
+                getUnsortedItemsByQuoteId(result.id, (itemErr, itemResults) => {
+                    if(itemErr){
+                        return callBack(itemErr);
+                    }
+                    quoteResults[index].products = itemResults;
+                    return callBack(null);
+                });
+                
+            }, (err) => {
+                if(err){
+                    console.log(err);
+                    return res.json({
+                        success: 0,
+                        itemErr: 1,
+                        message: "Item query error"
+                    });
+                }
+                return res.json({
+                    success: 1,
+                    data: quoteResults
+                });
             });
         });
     },
@@ -154,13 +216,46 @@ module.exports = {
                     message: 'Query error'
                 });
             }
-            return res.json({
-                success: 1,
-                data: results
+            const quoteResults = results;
+            async.eachOf(results, (result, index, callBack) => {
+                getUnsortedItemsByQuoteId(result.id, (itemErr, itemResults) => {
+                    if(itemErr){
+                        return callBack(itemErr);
+                    }
+                    quoteResults[index].products = itemResults;
+                    return callBack(null);
+                });
+                
+            }, (err) => {
+                if(err){
+                    console.log(err);
+                    return res.json({
+                        success: 0,
+                        itemErr: 1,
+                        message: "Item query error"
+                    });
+                }
+                return res.json({
+                    success: 1,
+                    data: quoteResults
+                });
             });
         });
     },
     updateUnsortedQuotation: (req, res) => {
+        const errorsArr = [];
+        const validationErrors = validationResult(req);
+        if(!validationErrors.isEmpty()){
+            const errors = Object.values(validationErrors.mapped());
+            errors.forEach(eachError => {
+                errorsArr.push(eachError.msg);
+            });
+            return res.json({
+                success: 0,
+                isDataValid: 0,
+                message: errorsArr
+            });
+        }
         const id = req.params.id;
         const body = req.body;
         updateUnsortedQuotation(id, body, (err, results) => {
@@ -177,9 +272,38 @@ module.exports = {
                     message: 'Query error'
                 });
             }
-            return res.json({
-                success: 1,
-                message: 'Quote updated successfully'
+
+            const products = body.products;
+            async.each(products, (product, callBack) => {
+                const id = product.id;
+                if(!id){
+                    return callBack("Product id error");
+                }
+
+                const data = {
+                    product_link: product.product_link,
+                    quantity: product.quantity,
+                };
+
+                updateUnsortedItem(id, data, (itemErr, itemResult) => {
+                    if(itemErr){
+                        return callBack(itemErr);
+                    }
+                    return callBack();
+                });
+            }, (err) => {
+                if(err){
+                    console.log(err);
+                    return res.json({
+                        success: 0,
+                        itemErr: 1,
+                        message: "Item error"
+                    });
+                }
+                return res.json({
+                    success: 1,
+                    message: "Quote updated successfully!"
+                });
             });
         });
     },
@@ -199,10 +323,20 @@ module.exports = {
                     message: 'Query error'
                 });
             }
-            return res.json({
-                success: 1,
-                message: 'Quote deleted successfully'
-            })
+
+            deleteUnsortedItemByQuoteId(id, (err, itemResults) => {
+                if(err){
+                    console.log(err);
+                    return res.json({
+                        success: 0,
+                        message: 'Item query error'
+                    });
+                }
+                return res.json({
+                    success: 1,
+                    data: 'Quote deleted successfully'
+                });
+            });
         });
 
     },

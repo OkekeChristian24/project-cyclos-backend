@@ -1,3 +1,4 @@
+const async = require('async');
 const { validationResult } = require('express-validator');
 const {
     create,
@@ -15,7 +16,8 @@ const {
     getSortedItemById,
     getSortedItemsByQuoteId,
     updateSortedItem,
-    deleteSortedItem
+    deleteSortedItem,
+    deleteSortedItemByQuoteId
 } = require('../sortedItems/sortedItem.service');
 
 module.exports = {
@@ -45,33 +47,36 @@ module.exports = {
                 });
             }
 
-            const prodCount = body.products.length;
-            for(let i=0; i<prodCount; i++){
+            const insertId = results.insertId;
+            async.each(body.products, (product, callBack) => {
                 const data = {
-                    sortedquote_id: results.insertId,
-                    product_link: body.products[i].product_link,
-                    quantity: body.products[i].quantity,
-                    item_weight: body.products[i].item_weight,
-                    price: body.products[i].price
+                    sortedquote_id: insertId,
+                    product_link: product.product_link,
+                    quantity: product.quantity,
+                    item_weight: product.item_weight,
+                    price: product.price
                 };
-
                 createItem(data, (itemErr, itemResult) => {
                     if(itemErr){
-                        console.log(itemErr);
-                        return res.json({
-                            success: 0,
-                            itemErr: 1,
-                            message: "Item error"
-                        });
+                        return callBack(itemErr);
                     }
+                    return callBack(null);
                 });
-
-            }
-
-            return res.json({
-                success: 1,
-                message: 'Quote placed successfully!'
+            }, (err) => {
+                if(err){
+                    console.log(err);
+                    return res.json({
+                        success: 0,
+                        itemErr: 1,
+                        message: "Item error"
+                    });
+                }
+                return res.json({
+                    success: 1,
+                    message: "Quote placed successfully!"
+                });
             });
+            
         });
     },
     getSortedQuotations: (req, res) => {
@@ -90,25 +95,29 @@ module.exports = {
                 });
             }
 
-            const prodCount = results.length;
-            for(let i=0; i<prodCount; i++){
-                getSortedItemsByQuoteId(results[i].id, (itemErr, itemResults) => {
-                    if(itemErr){
-                        console.log(itemErr);
-                        return res.json({
-                            success: 0,
-                            itemErr: 1,
-                            message: "Item error"
-                        });
-                    }
-                    results[i].products = itemResults;
-                });
-            }
-            return res.json({
-                success: 1,
-                data: results
-            });
+            
+            getSortedItems((itemErr, itemResults) => {
+                if(itemErr){
+                    return res.json({
+                        success: 0,
+                        itemErr: 1,
+                        message: 'Item query error'
+                    });
+                }
 
+                const quoteResults = results;
+                for(let i=0; i<results.length; i++){
+                    const products = itemResults.filter(item => item.sortedquote_id === results[i].id);
+                    quoteResults[i].products = products;
+                }
+
+                res.json({
+                    success: 1,
+                    data: quoteResults
+                });
+
+            });
+            
         });
     },
     getSortedQuotationByUser: (req, res) => {
@@ -127,10 +136,32 @@ module.exports = {
                     message: 'Query error'
                 });
             }
-            return res.json({
-                success: 1,
-                data: results
+
+            const quoteResults = results;
+            async.eachOf(results, (result, index, callBack) => {
+                getSortedItemsByQuoteId(result.id, (itemErr, itemResults) => {
+                    if(itemErr){
+                        return callBack(itemErr);
+                    }
+                    quoteResults[index].products = itemResults;
+                    return callBack(null);
+                });
+                
+            }, (err) => {
+                if(err){
+                    console.log(err);
+                    return res.json({
+                        success: 0,
+                        itemErr: 1,
+                        message: "Item query error"
+                    });
+                }
+                return res.json({
+                    success: 1,
+                    data: quoteResults
+                });
             });
+
         });
     },
     getSortedQuotationById: (req, res) => {
@@ -149,10 +180,33 @@ module.exports = {
                     message: 'Query error'
                 });
             }
-            return res.json({
-                success: 1,
-                data: results
+
+            const quoteResults = results;
+            async.eachOf(results, (result, index, callBack) => {
+                getSortedItemsByQuoteId(result.id, (itemErr, itemResults) => {
+                    if(itemErr){
+                        return callBack(itemErr);
+                    }
+                    quoteResults[index].products = itemResults;
+                    return callBack(null);
+                });
+                
+            }, (err) => {
+                if(err){
+                    console.log(err);
+                    return res.json({
+                        success: 0,
+                        itemErr: 1,
+                        message: "Item query error"
+                    });
+                }
+                return res.json({
+                    success: 1,
+                    data: quoteResults
+                });
             });
+
+            
         });
     },
     getSortedQuotationBySorter: (req, res) => {
@@ -171,13 +225,48 @@ module.exports = {
                     message: 'Query error'
                 });
             }
-            return res.json({
-                success: 1,
-                data: results
+
+            const quoteResults = results;
+            async.eachOf(results, (result, index, callBack) => {
+                getSortedItemsByQuoteId(result.id, (itemErr, itemResults) => {
+                    if(itemErr){
+                        return callBack(itemErr);
+                    }
+                    quoteResults[index].products = itemResults;
+                    return callBack(null);
+                });
+                
+            }, (err) => {
+                if(err){
+                    console.log(err);
+                    return res.json({
+                        success: 0,
+                        itemErr: 1,
+                        message: "Item query error"
+                    });
+                }
+                return res.json({
+                    success: 1,
+                    data: quoteResults
+                });
             });
+            
         });
     },
     updateSortedQuotation: (req, res) => {
+        const errorsArr = [];
+        const validationErrors = validationResult(req);
+        if(!validationErrors.isEmpty()){
+            const errors = Object.values(validationErrors.mapped());
+            errors.forEach(eachError => {
+                errorsArr.push(eachError.msg);
+            });
+            return res.json({
+                success: 0,
+                isDataValid: 0,
+                message: errorsArr
+            });
+        }
         const id = req.params.id;
         const body = req.body;
         updateSortedQuotation(id, body, (err, results) => {
@@ -194,9 +283,40 @@ module.exports = {
                     message: 'Query error'
                 });
             }
-            return res.json({
-                success: 1,
-                message: 'Quote updated successfully'
+
+            const products = body.products;
+            async.each(products, (product, callBack) => {
+                const id = product.id;
+                if(!id){
+                    return callBack("Product id error");
+                }
+
+                const data = {
+                    product_link: product.product_link,
+                    quantity: product.quantity,
+                    item_weight: product.item_weight,
+                    price: product.price
+                };
+
+                updateSortedItem(id, data, (itemErr, itemResult) => {
+                    if(itemErr){
+                        return callBack(itemErr);
+                    }
+                    return callBack();
+                });
+            }, (err) => {
+                if(err){
+                    console.log(err);
+                    return res.json({
+                        success: 0,
+                        itemErr: 1,
+                        message: "Item error"
+                    });
+                }
+                return res.json({
+                    success: 1,
+                    message: "Quote updated successfully!"
+                });
             });
         });
     },
@@ -216,10 +336,21 @@ module.exports = {
                     message: 'Query error'
                 });
             }
-            return res.json({
-                success: 1,
-                message: 'Quote deleted successfully'
-            })
+
+            deleteSortedItemByQuoteId(id, (err, itemResults) => {
+                if(err){
+                    console.log(err);
+                    return res.json({
+                        success: 0,
+                        message: 'Item query error'
+                    });
+                }
+                return res.json({
+                    success: 1,
+                    data: 'Quote deleted successfully'
+                });
+            });
+            
         });
     },
 };
