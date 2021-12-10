@@ -24,3 +24,9 @@ Content-Type: application/json
     "total_items": 3,
     "total_amount": 3490.42
 }
+
+###
+GET http://localhost:5000/api/order/13
+
+###
+DELETE http://localhost:5000/api/order/3
