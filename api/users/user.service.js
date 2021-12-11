@@ -3,8 +3,12 @@ const { pool } = require('../../config/database');
 module.exports = {
     registerUser: (data, callBack) => {
         pool.query(
-            'INSERT INTO users(wallet) VALUES(?)',
-            [data.wallet],
+            'INSERT INTO users(wallet, email, password) VALUES(?, ?, ?)',
+            [
+                data.wallet,
+                data.email,
+                data.password
+            ],
             (error, results, fields) => {
                 if(error){
                     return callBack(error);
