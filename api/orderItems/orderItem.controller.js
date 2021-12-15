@@ -8,6 +8,8 @@ const {
     deleteOrderItem
 } = require('./orderItem.service');
 
+// Intentionally left as it is
+
 module.exports = {
     createOrderItem: (req, res) => {},
     createMultiItems: (req, res) => {},

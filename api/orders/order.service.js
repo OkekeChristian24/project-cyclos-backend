@@ -3,12 +3,11 @@ const { pool } = require('../../config/database');
 module.exports = {
     create: (data, callBack) => {
         pool.query(
-            'INSERT INTO orders(user_id, total_amount, payment_id, sortedquote_id, total_items) VALUES(?, ?, ?, ?, ?)',
+            'INSERT INTO orders(user_id, total_amount, payment_id, total_items) VALUES(?, ?, ?, ?)',
             [ 
                 data.user_id,
                 data.total_amount,
                 data.payment_id,
-                data.sortedquote_id,
                 data.total_items
             ],
             (error, results, fields) => {
@@ -73,11 +72,10 @@ module.exports = {
     },
     updateOrder: (id, data, callBack) => {
         pool.query(
-            `UPDATE orders SET total_amount = ?, payment_id = ?, sortedquote_id = ?, total_items = ? WHERE id = ?`,
+            `UPDATE orders SET total_amount = ?, payment_id = ?, total_items = ? WHERE id = ?`,
             [
                 data.total_amount,
                 data.payment_id,
-                data.sortedquote_id,
                 data.total_items,
                 id
             ],

@@ -3,67 +3,72 @@ const { pool } = require('../../config/database');
 module.exports = {
     create: (data, callBack) => {
         pool.query(
-            'INSERT INTO payments(order_id, amount, unique_id, network_id, asset_id, tx_hash) VALUES(?, ?, ?, ?, ?, ?)',
-            [
-                data.order_id,
-                data.amount,
-                data.unique_id,
-                data.network_id,
-                data.asset_id,
-                data.tx_hash
+            'INSERT INTO users_receive_address(user_id, address_line1, address_line2, city, postal_code, country, phone) VALUES(?, ?, ?, ?, ?, ?, ?)',
+            [ 
+                data.user_id,
+                data.address_line1,
+                data.address_line2,
+                data.city,
+                data.postal_code,
+                data.country,
+                data.phone,
             ],
             (error, results, fields) => {
-                if(error){
+                if (error) {
                     return callBack(error);
                 }
                 return callBack(null, results);
             }
         );
     },
-    getPayments: callBack => {
+    getAddresses: callBack => {
         pool.query(
-            'SELECT * FROM payments',
+            `SELECT * FROM users_receive_address`,
             [],
             (error, results, fields) => {
+                if (error) {
+                    return callBack(error);
+                }
+                return callBack(null, results);
+            }
+        );
+    },
+    getUserAddress: (id, callBack) => {
+        pool.query(
+            `SELECT * FROM orders WHERE user_id = ?`,
+            [id],
+            (error, results, fields) => {
                 if(error){
                     return callBack(error);
                 }
                 return callBack(null, results);
             }
+        
         );
     },
-    getPaymentById: (id, callBack) => {
+    getAddressById: (id, callBack) => {
         pool.query(
-            `SELECT * FROM payments WHERE id = ?`,
+            `SELECT * FROM orders WHERE id = ?`,
             [id],
             (error, results, fields) => {
-                if (error) {
+                if(error){
                     return callBack(error);
                 }
                 return callBack(null, results);
             }
+        
         );
     },
-    getPaymentByUser: (id, callBack) => {
+    updateAddress: (id, data, callBack) => {
         pool.query(
-            `SELECT * FROM payments p INNER JOIN orders o ON p.order_id = o.id WHERE o.user_id = ?`,
-            [id],
-            (error, results, fields) => {
-                if (error) {
-                    return callBack(error);
-                }
-                return callBack(null, results);
-            }
-        );
-    },
-    updatePayment: (id, data, callBack) => {
-        pool.query(
-            `UPDATE payments SET amount = ?, network_id = ?, asset_id = ?, tx_hash = ? WHERE id = ?`,
-            [
-                data.amount,
-                data.network_id,
-                data.asset_id,
-                data.tx_hash,
+            'UPDATE users_receive_address SET address_line1 = ?, address_line2 = ?, city = ?, postal_code = ?, country = ?, phone = ? WHERE id = ?',
+            [ 
+                data.address_line1,
+                data.address_line2,
+                data.city,
+                data.postal_code,
+                data.country,
+                data.phone,
                 id
             ],
             (error, results, fields) => {
@@ -74,9 +79,9 @@ module.exports = {
             }
         );
     },
-    deletePayment: (id, callBack) => {
+    deleteAddress: (id, callBack) => {
         pool.query(
-            `DELETE FROM payments WHERE id = ?`,
+            'DELETE * FROM users_receive_address WHERE id = ?',
             [id],
             (error, results, fields) => {
                 if (error) {

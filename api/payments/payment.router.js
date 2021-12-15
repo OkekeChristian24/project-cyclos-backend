@@ -15,7 +15,7 @@ router.post('/', validateCreate, createPayment);
 router.get('/', getPayments);
 router.get('/:id', getPaymentById);
 router.get('/user/:id', getPaymentByUser);
-router.put('/:id', validateCreate, updatePayment);
+router.put('/:id', validateEdit, updatePayment);
 router.delete('/:id', deletePayment);
 
 module.exports = router;

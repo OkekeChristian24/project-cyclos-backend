@@ -1,121 +1,34 @@
-const { create,
-    getProducts,
-    getShopProducts,
-    getProductById,
-    updateProduct,
-    deleteProduct,
- } = require('./product.service');
+const axios = require('axios');
+const dotenv = require('dotenv');
+
+dotenv.config({path: './config/config.env'});
+
 
 module.exports = {
-    createProduct: (req, res) => {
-        const body = req.body;
-        create(body, (err, results) => {
-            if (err) {
-                console.log(err);
-                return res.status(500).json({
-                    success: 0,
-                    message: 'Database connection error'
-                });
-            }
-            return res.status(200).json({
-                success: 1,
-                message: 'Product saved successfully !'
-            });
-        });
-    },
-    getProducts: (req, res) => {
-        getProducts((err, results) => {
-            if (err) {
-                console.log(err);
-                return;
-            }
-            if (!results) {
-                return res.json({
-                    success: 0,
-                    message: 'No Product found'
-                });
-            }
-            return res.json(
-                results
-            );
-        });
-    },
-    getShopProducts: (req, res) => {
-        const id = req.params.id;
-        getShopProducts(id, (err, results) => {
-            if (err) {
-                console.log(err);
-                return;
-            }
-            if (!results) {
-                return res.json({
-                    success: 0,
-                    message: 'No product found !'
-                });
-            }
-            return res.json(
-                results
-            );
-        });
-    },
-    getProductById: (req, res) => {
-        const id = req.params.id;
-        getProductById(id, (err, results) => {
-            if (err) {
-                console.log(err);
-                return;
-            }
-            if (!results) {
-                return res.json({
-                    success: 0,
-                    message: 'Product not found'
-                });
-            }
-            return res.json(
-                results
-            );
-        });
-    },
-    updateProduct: (req, res) => {
-        const id = req.params.id;
-        const body = req.body;
-        updateProduct(id, body, (err, results) => {
-            if (err) {
-                console.log(err);
-                return res.status(500).json({
-                    success: 0,
-                    message: 'Oops something went wrong'
-                });
-            }
-            // if (!results) {
-            //     return res.json({
-            //         success: 0,
-            //         message: 'User not found'
-            //     });
-            // }
-            return res.status(200).json({
-                success: 1,
-                message: 'Product updated successfully'
-            });
-        });
-    },
-    deleteProduct: (req, res) => {
-        const id = req.params.id;
-        deleteProduct(id, (err, results) => {
-            if (err) {
-                console.log(err);
-                return;
-            }
-            // if (!results) {
-            //     return res.json({
-            //         success: 0,
-            //         message: 'User not found'
-            //     });
-            // }
+    getProductData: (req, res) => {
+        const domain = req.body.domain ? req.body.domain : "amazon.com"
+        
+        // set up the request parameters
+        const params = {
+        api_key: process.env.API_KEY,
+        type: "search",
+        amazon_domain: domain,
+        search_term: req.body.search_term,
+        sort_by: "price_high_to_low"
+        }
+
+        // make the http GET request to Rainforest API
+        axios.get('https://api.rainforestapi.com/request', { params })
+        .then(response => {
+
+            // print the JSON response from Rainforest API
+            // console.log(JSON.stringify(response.data, 0, 2));
             return res.json({
-                success: 1,
-                data: 'Product deleted successfully'
+                data: response.data
             });
-        });
-    }
-}
+        }).catch(error => {
+            // catch and print the error
+            console.log(error);
+        })
+    },
+};
