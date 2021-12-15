@@ -55,6 +55,9 @@ app.use('/api/order', require('./api/orders/order.router'));
 app.use('/api/payment', require('./api/payments/payment.router'));
 app.use('/api/sorter', require('./api/sorters/sorter.router'));
 
+app.use('/api/products', require('./api/products/product.router'));
+
+
 // app.use('/api/shops', require('./api/shops/shop.router'));
 // app.use('/api/categories', require('./api/categories/category.router'));
 // app.use('/api/products', require('./api/products/product.router'));

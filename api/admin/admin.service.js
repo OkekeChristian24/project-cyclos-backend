@@ -3,8 +3,14 @@ const { pool } = require('../../config/database');
 module.exports = {
     create: (data, callBack) => {
         pool.query(
-            'insert into admins(username, email, mobile, password) values(?, ?, ?, ?)',
-            [ data.username, data.email, data.mobile, data.password],
+            'INSERT INTO admins(first_name, last_name, email, phone, password) VALUES(?, ?, ?, ?, ?)',
+            [ 
+                data.first_name, 
+                data.last_name, 
+                data.email,
+                data.phone, 
+                data.password
+            ],
             (error, results, fields) => {
                 if (error) {
                     return callBack(error);
@@ -15,7 +21,7 @@ module.exports = {
     },
     getAdmins: callBack => {
         pool.query(
-            `select id, username, email, mobile from admins`,
+            `SELECT id, first_name, last_name, email, phone FROM admins`,
             [],
             (error, results, fields) => {
                 if (error) {
@@ -27,7 +33,7 @@ module.exports = {
     },
     getAdminById: (id, callBack) => {
         pool.query(
-            `select id, username, email, mobile from admins where id = ?`,
+            `SELECT id, first_name, last_name, email, phone FROM admins WHERE id = ?`,
             [id],
             (error, results, fields) => {
                 if (error) {
@@ -39,11 +45,12 @@ module.exports = {
     },
     updateAdmin: (id, data, callBack) => {
         pool.query(
-            `update admins set username = ?, email = ?, mobile = ?, password = ? where id = ?`,
+            `UPDATE admins SET first_name = ?, last_name = ?, email = ?, phone = ?, password = ? WHERE id = ?`,
             [
-                data.username,
+                data.first_name,
+                data.last_name,
                 data.email,
-                data.mobile,
+                data.phone,
                 data.password,
                 id
             ],
@@ -57,7 +64,7 @@ module.exports = {
     },
     deleteAdmin: (id, callBack) => {
         pool.query(
-            `delete from admins where id = ?`,
+            `DELETE FROM admins WHERE id = ?`,
             [id],
             (error, results, fields) => {
                 if (error) {
@@ -69,7 +76,7 @@ module.exports = {
     },
     getAdminByEmail: (email, callBack) => {
         pool.query(
-            `select * from admins where email = ?`,
+            `SELECT * FROM admins WHERE email = ?`,
             [email],
             (error, results, fields) => {
                 if (error) {

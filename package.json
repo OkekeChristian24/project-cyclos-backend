@@ -1,5 +1,5 @@
 {
-  "name": "MMD_Ecom",
+  "name": "mastermind_ecom",
   "version": "1.0.0",
   "description": "",
   "main": "App.js",
@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "async": "^3.2.2",
+    "axios": "^0.24.0",
     "bcrypt": "^4.0.1",
     "busboy": "^0.3.1",
     "connect-flash": "^0.1.1",
