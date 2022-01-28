@@ -1,6 +1,6 @@
 const { validationResult } = require('express-validator');
 const {
-    create,
+    createPayment,
     getPayments,
     getPaymentById,
     getPaymentByUser,
@@ -17,7 +17,7 @@ module.exports = {
             errors.forEach(eachError => {
                 errorsArr.push(eachError.msg);
             });
-            return res.json({
+            return res.status(400).json({
                 success: 0,
                 isDataValid: 0,
                 message: errorsArr
@@ -25,16 +25,23 @@ module.exports = {
         }
 
         const body = req.body;
-        create(body, (err, results) => {
+        createPayment(body, (err, results) => {
             if (err) {
                 console.log(err);
-                return res.json({
+                return res.status(400).json({
                     success: 0,
                     message: 'Database query error'
                 });
             }
 
-            return res.json({
+            if(!results){
+                return res.status(502).json({
+                    success: 0,
+                    message: 'Invalid response'
+                });
+            }
+
+            return res.status(200).json({
                 success: 1,
                 message: 'Payment made successfully!'
             });
@@ -44,18 +51,18 @@ module.exports = {
         getPayments((err, results) => {
             if (err) {
                 console.log(err);
-                return res.json({
+                return res.status(400).json({
                     success: 0,
                     message: 'Database query error'
                 });
             }
             if (!results) {
-                return res.json({
+                return res.status(502).json({
                     success: 0,
                     message: 'Query error'
                 });
             }
-            return res.json({
+            return res.status(200).json({
                 success: 1,
                 data: results
             });
@@ -66,18 +73,18 @@ module.exports = {
         getPaymentById(id, (err, results) => {
             if (err) {
                 console.log(err);
-                return res.json({
+                return res.status(400).json({
                     success: 0,
                     message: 'Database query error'
                 });
             }
             if (!results) {
-                return res.json({
+                return res.status(502).json({
                     success: 0,
                     message: 'Query error'
                 });
             }
-            return res.json({
+            return res.status(200).json({
                 success: 1,
                 data: results
             });
@@ -88,18 +95,18 @@ module.exports = {
         getPaymentByUser(id, (err, results) => {
             if (err) {
                 console.log(err);
-                return res.json({
+                return res.status(400).json({
                     success: 0,
                     message: 'Database query error'
                 });
             }
             if (!results) {
-                return res.json({
+                return res.status(502).json({
                     success: 0,
                     message: 'Query error'
                 });
             }
-            return res.json({
+            return res.status(200).json({
                 success: 1,
                 data: results
             });
@@ -113,7 +120,7 @@ module.exports = {
             errors.forEach(eachError => {
                 errorsArr.push(eachError.msg);
             });
-            return res.json({
+            return res.status(400).json({
                 success: 0,
                 isDataValid: 0,
                 message: errorsArr
@@ -125,18 +132,18 @@ module.exports = {
         updatePayment(id, body, (err, results) => {
             if (err) {
                 console.log(err);
-                return res.json({
+                return res.status(400).json({
                     success: 0,
                     message: 'Oops something went wrong'
                 });
             }
             if (!results) {
-                return res.json({
+                return res.status(502).json({
                     success: 0,
                     message: 'Query error'
                 });
             }
-            return res.json({
+            return res.status(200).json({
                 success: 1,
                 message: 'Payment updated successfully'
             });
@@ -147,18 +154,18 @@ module.exports = {
         deletePayment(id, (err, results) => {
             if (err) {
                 console.log(err);
-                return res.json({
+                return res.status(400).json({
                     success: 0,
                     message: 'Database query error'
                 });
             }
             if (!results) {
-                return res.json({
+                return res.status(502).json({
                     success: 0,
                     message: 'Query error'
                 });
             }
-            return res.json({
+            return res.status(200).json({
                 success: 1,
                 data: 'Payment deleted successfully'
             });

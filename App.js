@@ -10,10 +10,10 @@ const connectFlash = require('connect-flash');
 const path = require("path");
 const { sessionStore } = require('./config/database');
 
-const app = express();
-
 // Load config
 dotenv.config({path: './config/config.env'});
+
+const app = express();
 
 // Cookie parser
 app.use(cookieParser(process.env.SESSION_SECRET));

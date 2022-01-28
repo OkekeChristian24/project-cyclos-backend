@@ -18,17 +18,20 @@ module.exports = {
         }
 
         // make the http GET request to Rainforest API
-        axios.get('https://api.rainforestapi.com/request', { params })
+        axios.get(process.env.AMAZON_EXTERNAL_API, { params })
         .then(response => {
 
             // print the JSON response from Rainforest API
             // console.log(JSON.stringify(response.data, 0, 2));
-            return res.json({
+            return res.status(200).json({
                 data: response.data
             });
         }).catch(error => {
-            // catch and print the error
             console.log(error);
+            // catch and print the error
+            return res.status(500).json({
+                message: "Server Error"
+            });
         })
     },
 };
