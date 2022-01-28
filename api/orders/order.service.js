@@ -3,11 +3,12 @@ const { pool } = require('../../config/database');
 module.exports = {
     create: (data, callBack) => {
         pool.query(
-            'INSERT INTO orders(user_id, total_amount, payment_id, total_items) VALUES(?, ?, ?, ?)',
+            'INSERT INTO orders(buyer_addr, unique_id, total_amount, payment_unique_id, total_items) VALUES(?, ?, ?, ?)',
             [ 
-                data.user_id,
+                data.buyer_addr,
+                data.unique_id,
                 data.total_amount,
-                data.payment_id,
+                data.payment_unique_id,
                 data.total_items
             ],
             (error, results, fields) => {
@@ -44,10 +45,10 @@ module.exports = {
             }
         );
     },
-    getUserOrders: (id, callBack) => {
+    getUserOrders: (addr, callBack) => {
         pool.query(
-            `SELECT * FROM orders WHERE user_id = ?`,
-            [id],
+            `SELECT * FROM orders WHERE buyer_addr = ?`,
+            [addr],
             (error, results, fields) => {
                 if(error){
                     return callBack(error);
@@ -59,7 +60,6 @@ module.exports = {
     },
     getOrderById: (id, callBack) => {
         pool.query(
-            // `select id, shop_id, name, created_at from categories where id = ?`,
             `SELECT * FROM orders WHERE id = ?`,
             [id],
             (error, results, fields) => {
@@ -77,6 +77,22 @@ module.exports = {
                 data.total_amount,
                 data.payment_id,
                 data.total_items,
+                id
+            ],
+            (error, results, fields) => {
+                if (error) {
+                    return callBack(error);
+                }
+                console.log(results);
+                return callBack(null, results);
+            }
+        );
+    },
+    updateOrderStatus: (id, data, callBack) => {
+        pool.query(
+            'UPDATE orders SET status = ? WHERE id = ?',
+            [
+                data.status,
                 id
             ],
             (error, results, fields) => {

@@ -1,15 +1,16 @@
 const { pool } = require('../../config/database');
 
 module.exports = {
-    create: (data, callBack) => {
+    createPayment: (data, callBack) => {
         pool.query(
-            'INSERT INTO payments(order_id, user_id, amount, unique_id, network_id, asset_id, tx_hash) VALUES(?, ?, ?, ?, ?, ?, ?)',
+            'INSERT INTO payments(order_id, order_unique_id, buyer_addr, amount, unique_id, chain_id, asset_id, tx_hash) VALUES(?, ?, ?, ?, ?, ?, ?)',
             [
                 data.order_id,
-                data.user_id,
+                data.order_unique_id,
+                data.buyer_addr,
                 data.amount,
                 data.unique_id,
-                data.network_id,
+                data.chain_id,
                 data.asset_id,
                 data.tx_hash
             ],

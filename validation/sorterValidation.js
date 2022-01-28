@@ -35,6 +35,10 @@ const validateEdit = [
         .trim()
         .escape()
     ,
+    body("password", "No password found")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+    ,
 
     body("status", "Specify your status")
         .exists({checkFalsy: true})

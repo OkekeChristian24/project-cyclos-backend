@@ -1,4 +1,6 @@
-const { validateCreate, validateEdit } = require('../../validation/orderValidation');
+const { validateCreate, validateEdit, validateStatusChange } = require('../../validation/orderValidation');
+
+const { checkIfAdmin } = require("../../auth/order_validation");
 const { 
     createOrder,
     getOrders,
@@ -6,6 +8,7 @@ const {
     getUserOrders,
     getOrderById,
     updateOrder,
+    updateOrderStatus,
     deleteOrder,
 } = require('./order.controller');
 const router = require('express').Router();
@@ -16,7 +19,10 @@ router.get('/', getOrders);
 // router.get('/shop/:id', getShopOrders);
 router.get('/:id', getOrderById);
 router.get('/user/:id', getUserOrders);
-router.put('/:id', validateEdit, updateOrder);
 router.delete('/:id', deleteOrder);
+// router.put('/:id', validateEdit, updateOrder);
+
+// For admins
+router.put('/:id/status',checkToken, checkIfAdmin, validateStatusChange, updateOrderStatus);
 
 module.exports = router;

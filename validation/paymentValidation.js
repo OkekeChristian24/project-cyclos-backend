@@ -1,5 +1,18 @@
 const { body } = require('express-validator');
 
+/**
+ *
+ data.order_id,
+data.order_unique_id,
+data.buyer_addr,
+data.amount,
+data.unique_id,
+data.chain_id,
+data.asset_id,
+data.tx_hash
+ *
+ */
+
 const validateCreate = [
     body("order_id", "No order id")
         .exists({checkFalsy: true})
@@ -13,7 +26,7 @@ const validateCreate = [
         }
     ),
 
-    body("amount", "No amount value")
+    body("totalPrice", "No amount value")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .custom((value, { req }) => {
@@ -24,12 +37,12 @@ const validateCreate = [
         }
     ),
 
-    body("network_id", "No network id")
+    body("chain_id", "No chain id")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .custom((value, { req }) => {
             if(!(Number.isInteger(value) && value > 0)){
-                throw new Error('Invalid network id');
+                throw new Error('Invalid chain id');
             }
 
             return true;
@@ -90,12 +103,12 @@ const validateEdit = [
         }
     ),
 
-    body("network_id", "No network id")
+    body("chain_id", "No chain id")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .custom((value, { req }) => {
             if(!(Number.isInteger(value) && value > 0)){
-                throw new Error('Invalid network id');
+                throw new Error('Invalid chain id');
             }
 
             return true;

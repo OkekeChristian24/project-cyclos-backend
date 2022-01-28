@@ -260,6 +260,10 @@ module.exports = {
         getUserByWallet(body.wallet, (err, results) => {
             if (err) {
                 console.log(err);
+                return res.json({
+                    success: 0,
+                    message: 'Oops something went wrong'
+                });
             }
             if (!results) {
                 return res.json({
