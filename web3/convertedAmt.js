@@ -8,13 +8,11 @@ const convertedAmt = (value, chainID, tokenIndex) => {
     // console.log("In convertedAmt, supported: ", supportedTokens[chainID][tokenIndex - 1]);
 
     
-    console.log("In convertedAmt, supported: ", supportedTokens[chainID][tokenIndex - 1].decimals);
     const decimals = supportedTokens[chainID][tokenIndex - 1].decimals;
     // const amt = new BigNumber(value / 10 ** decimals);
     // const amt = new BigNumber(value / 10 ** decimals);
     const amt = Number((parseFloat(value)/10**decimals).toFixed(5))
 
-    console.log("Converted amount: ", amt);
     return amt;
 };
 

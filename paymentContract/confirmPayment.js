@@ -7,14 +7,29 @@ const { fantomHexToNumString, bscHexToNumString } = require("../web3/hexToNumStr
 const confirmPaymentOnFantom = async(buyer, orderID, paymentID, totalPrice, chainID, tokenIndex) => {
     const paymentDetails = await FTMcontract.methods.getTransactionDetails(buyer, orderID).call();
     console.log("paymentDetails: ", paymentDetails);
+
     const txnPrice = convertedAmt(paymentDetails.totalPrice, chainID, tokenIndex)
-    const convertedPaymentID = fantomHexToNumString(paymentID);
-    console.log("convertedPaymentID: ", convertedPaymentID);
-    // || 
-    // buyer !== paymentDetails.buyer
-        
+    console.log("Payment ID compare: ", paymentID !== String(paymentDetails.paymentID));
+    console.log("Buyer compare: ", buyer !== paymentDetails.buyer);
+    console.log("Price compare: ", totalPrice > txnPrice);
+    
+    console.log("Frontend paymentID: ", paymentID);
+    console.log("Backend paymentID: ", String(paymentDetails.paymentID));
+    console.log("Frotend buyer: ", buyer);
+    console.log("Backend buyer: ", paymentDetails.buyer);
+    console.log("Frontend price: ", totalPrice);
+    console.log("Backend price: ", txnPrice);
+    
+    console.log("typeof Frontend paymentID: ", typeof paymentID);
+    console.log("typeof Backend paymentID: ", typeof String(paymentDetails.paymentID));
+    console.log("typeof Frotend buyer: ", typeof buyer);
+    console.log("typeof Backend buyer: ", typeof paymentDetails.buyer);
+    console.log("typeof Frontend price: ", typeof totalPrice);
+    console.log("typeof Backend price: ", typeof txnPrice);
+    
+
     if(
-        convertedPaymentID !== paymentDetails.paymentID 
+        paymentID !== String(paymentDetails.paymentID)
         ||
         totalPrice > txnPrice
     ){
@@ -28,12 +43,9 @@ const confirmPaymentOnBSC = async(buyer, orderID, paymentID, totalPrice, chainID
     const paymentDetails = await BSCcontract.methods.getTransactionDetails(buyer, orderID).call();
     console.log("paymentDetails: ", paymentDetails);
     const txnPrice = convertedAmt(paymentDetails.totalPrice, chainID, tokenIndex)
-    const convertedPaymentID = bscHexToNumString(paymentID);
-    console.log("convertedPaymentID: ", convertedPaymentID);
-    // || 
-    // buyer !== paymentDetails.buyer
+    
     if(
-        convertedPaymentID !== paymentDetails.paymentID 
+        paymentID !== String(paymentDetails.paymentID) 
         ||
         totalPrice > txnPrice
     ){
