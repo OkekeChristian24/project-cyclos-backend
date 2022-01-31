@@ -3,7 +3,7 @@ const { pool } = require('../../config/database');
 module.exports = {
     create: (data, callBack) => {
         pool.query(
-            'INSERT INTO orders(buyer_addr, unique_id, total_amount, payment_unique_id, total_items) VALUES(?, ?, ?, ?)',
+            'INSERT INTO orders(buyer_addr, unique_id, total_amount, payment_unique_id, total_items) VALUES(?, ?, ?, ?, ?)',
             [ 
                 data.buyer_addr,
                 data.unique_id,

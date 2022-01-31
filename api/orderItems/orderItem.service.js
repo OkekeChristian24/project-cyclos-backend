@@ -3,11 +3,10 @@ const { pool } = require('../../config/database');
 module.exports = {
     createItem: (data, callBack) => {
         pool.query(
-            'INSERT INTO order_items(order_id, product_link, asin, quantity, price) VALUES(?, ?, ?, ?, ?, ?, ?)',
+            'INSERT INTO order_items(order_id, product_link, asin, quantity, price) VALUES(?, ?, ?, ?, ?)',
             [
                 data.order_id,
                 data.product_link,
-                data.domain,
                 data.asin,
                 data.quantity,
                 data.price
@@ -58,11 +57,10 @@ module.exports = {
     },
     updateOrderItem: (id, data, callBack) => {
         pool.query(
-            'UPDATE order_items SET product_link = ?, quantity = ?, item_weight = ?, price = ? WHERE id = ?',
+            'UPDATE order_items SET product_link = ?, quantity = ?, price = ? WHERE id = ?',
             [
                 data.product_link,
                 data.quantity,
-                data.item_weight,
                 data.price,
                 id
             ],

@@ -53,7 +53,7 @@ module.exports = {
         /**
          * Confirm if payment was made on the blockchain
          */
-        console.log("Request products: ", req.body.products);
+        // console.log("Request products: ", req.body.products);
         let confirmed;
         if(req.body.chainID === 56){
             confirmed = await confirmPaymentOnBSC(
@@ -67,6 +67,7 @@ module.exports = {
             
             // console.log("txnDetails: ", txnDetails);
             if(!confirmed){
+                console.log("Not confirmed error");
                 return res.status(404).json({
                     success: 0,
                     message: "Invalid transaction"
@@ -83,12 +84,14 @@ module.exports = {
             );
 
             if(!confirmed){
+                console.log("Not confirmed error");
                 return res.status(404).json({
                     success: 0,
                     message: "Invalid transaction"
                 });
             }
         }else{
+            console.log("Invalid chain error");
             return res.status(404).json({
                 success: 0,
                 message: "Invalid chain ID"
@@ -118,6 +121,7 @@ module.exports = {
         // const body = req.body;
         const orderBody = {
             buyer_addr: req.body.buyer,
+            unique_id: req.body.orderID,
             total_amount: req.body.totalPrice,
             payment_unique_id: req.body.paymentID,
             total_items: req.body.totalQty
@@ -175,7 +179,7 @@ module.exports = {
                 const products = req.body.products;
                 async.each(products, (product, callBack) => {
                     //order_id, product_link, domain, asin, quantity, price
-                    console.log(product);
+                    // console.log(product);
                     const data = {
                         order_id: insertId,
                         product_link: product.link,
@@ -185,6 +189,7 @@ module.exports = {
                     };
                     createItem(data, (itemErr, itemResult) => {
                         if(itemErr){
+                            console.log(itemErr);
                             return callBack(itemErr);
                         }
                         return callBack(null);
