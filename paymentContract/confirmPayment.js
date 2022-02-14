@@ -38,6 +38,7 @@ const confirmPaymentOnFantom = async(buyer, orderID, paymentID, totalPrice, chai
     return true;
 };
 
+
 // getTransactionDetails(address buyer, string memory orderId)
 const confirmPaymentOnBSC = async(buyer, orderID, paymentID, totalPrice, chainID, tokenIndex) => {
     const paymentDetails = await BSCcontract.methods.getTransactionDetails(buyer, orderID).call();

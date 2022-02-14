@@ -1,5 +1,13 @@
 const { body } = require('express-validator');
-
+const {
+    txHashRegex,
+    validPhoneReg,
+    validStreetReg,
+    validCityReg,
+    validStateReg,
+    validCountryReg,
+    validPostalCodeReg
+ } = require("../regex/allRegex");
 /*
 * buyer (string)
 * totalPrice (int)
@@ -15,6 +23,8 @@ const { body } = require('express-validator');
 * products[i].quantity (int)
 * itemWeight (int)
 * price (int)
+* shipping: shippingDetails
+
 */
 
 const validateCreate = [
@@ -104,7 +114,8 @@ const validateCreate = [
     body("products.*.link", "No product link")
         .exists({checkFalsy: true})
         .not().isEmpty()
-        .isURL().withMessage("Invalid Url")
+        .isURL().withMessage("Invalid product Url")
+        .escape()
     ,
     body("products.*.quantity", "Specify product quantity")
         .exists({checkFalsy: true})
@@ -118,29 +129,102 @@ const validateCreate = [
             }
         )
     ,
-    // body("products.*.itemWeight", "No product weight")
-    //     .exists({checkFalsy: true})
-    //     .not().isEmpty()
-    //     .custom((value, { req }) => {
-    //         if(!(!isNaN(value)  && value > 0)){
-    //             throw new Error('Invalid weight value')
-    //         }
-    //         return true;
-    //         }
-    //     )
-    // ,
+    body("products.*.asin", "No product asin")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .trim()
+        .escape()
+    ,
+    body("products.*.title", "No product title")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .trim()
+        .escape()
+    ,
+    body("products.*.image", "No product image")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .isURL().withMessage("Invalid image Url")
+        .escape()
+    ,
     body("products.*.price", "No product price")
         .exists({checkFalsy: true})
         .not().isEmpty()
-        .custom((value, { req }) => {
+        .custom(
+            (value, { req }) => {
             if(!(!isNaN(value)  && value > 0)){
-                throw new Error('Invalid price value');
+                throw new Error('Invalid product price value');
             }
             return true;
             }
         )
+    ,
+    body("shipping.email", "Missing shipping email")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .isEmail().withMessage("Invalid shipping email")
+        .normalizeEmail()
+    ,
+    body("shipping.phone", "Missing shipping phone")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .trim()
+        .matches(validPhoneReg).withMessage("Invalid shipping phone")
+        .escape()
+    ,
+    body("shipping.street", "Missing shipping street")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .trim()
+        .matches(validStreetReg).withMessage("Invalid shipping street")
+        .escape()
+    ,
+    body("shipping.city", "Missing shipping city")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .trim()
+        .matches(validCityReg).withMessage("Invalid shipping street")
+        .escape()
+    ,
+    body("shipping.state", "Missing shipping state")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .trim()
+        .matches(validStateReg).withMessage("Invalid shipping street")
+        .escape()
+    ,
+    body("shipping.country", "Missing shipping country")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .trim()
+        .matches(validCountryReg).withMessage("Invalid shipping street")
+        .escape()
+    ,
+    body("shipping.postalCode", "Missing shipping postal code")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .trim()
+        .matches(validPostalCodeReg).withMessage("Invalid shipping street")
+        .escape()
     
 ];
+
+/**
+ * 
+const shippingDetails = {
+    email: shippingAddress.email,
+    phone: phoneNum,
+    street: shippingAddress.street,
+    city: shippingAddress.city,
+    state: shippingAddress.state,
+    country: shippingAddress.country,
+    postalCode: shippingAddress.postalCode
+};
+body('productDetails.commodityID')
+
+
+ * 
+ */
 
 const validateEdit = [
     body("buyer", "No buyer specified")
@@ -190,14 +274,10 @@ const validateEdit = [
         .escape()
         .custom(
             (value, { req }) => {
-                const txHashRegex = /^0x([A-Fa-f0-9]{64})$/;
                 if(txHashRegex.test(value)){
                     return true;
                 }
-                
                 throw new Error('Invalid transaction hash');
-                
-         
             }
         )
     ,
@@ -231,26 +311,84 @@ const validateEdit = [
             }
         )
     ,
-    // body("products.*.itemWeight", "No product weight")
-    //     .exists({checkFalsy: true})
-    //     .not().isEmpty()
-    //     .custom((value, { req }) => {
-    //         if(!(!isNaN(value)  && value > 0)){
-    //             throw new Error('Invalid weight value')
-    //         }
-    //         return true;
-    //     }
-    // ),
+    body("products.*.asin", "No product asin")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .trim()
+        .escape()
+    ,
+    body("products.*.title", "No product title")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .trim()
+        .escape()
+    ,
+    body("products.*.image", "No product image")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .isURL().withMessage("Invalid image Url")
+        .escape()
+    ,
     body("products.*.price", "No product price")
         .exists({checkFalsy: true})
         .not().isEmpty()
-        .custom((value, { req }) => {
-            if(!(!isNaN(value)  && value > 0)){
-                throw new Error('Invalid price value')
+        .custom(
+            (value, { req }) => {
+                if(!(!isNaN(value)  && value > 0)){
+                    throw new Error('Invalid price value')
+                }
+                return true;
             }
-            return true;
-        }
-    )    
+        )
+    ,
+    body("shipping.email", "Missing shipping email")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .isEmail().withMessage("Invalid shipping email")
+        .normalizeEmail()
+    ,
+    body("shipping.phone", "Missing shipping phone")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .trim()
+        .matches(validPhoneReg).withMessage("Invalid shipping phone")
+        .escape()
+    ,
+    body("shipping.street", "Missing shipping street")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .trim()
+        .matches(validStreetReg).withMessage("Invalid shipping street")
+        .escape()
+    ,
+    body("shipping.city", "Missing shipping city")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .trim()
+        .matches(validCityReg).withMessage("Invalid shipping street")
+        .escape()
+    ,
+    body("shipping.state", "Missing shipping state")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .trim()
+        .matches(validStateReg).withMessage("Invalid shipping street")
+        .escape()
+    ,
+    body("shipping.country", "Missing shipping country")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .trim()
+        .matches(validCountryReg).withMessage("Invalid shipping street")
+        .escape()
+    ,
+    body("shipping.postalCode", "Missing shipping postal code")
+        .exists({checkFalsy: true})
+        .not().isEmpty()
+        .trim()
+        .matches(validPostalCodeReg).withMessage("Invalid shipping street")
+        .escape()
+      
 ];
 
 const validateStatusChange = [
