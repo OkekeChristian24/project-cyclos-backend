@@ -24,6 +24,17 @@ const {
     deleteOrderItemByOrderId
 } = require('../orderItems/orderItem.service');
 
+const {
+    createShippingAddress,
+    getShippingAddresses,
+    getBuyerShippingAddress,
+    getShippingAddressById,
+    getShippingAddressByOrderId,
+    getShippingAddressByOrderUniqueId,
+    updateShippingAddress,
+    deleteShippingAddress
+} = require("../../otherServices/orderShippings.service");
+
 const { createPayment } = require("../payments/payment.service");
 const convertedAmt = require("../../web3/convertedAmt");
 
@@ -98,26 +109,7 @@ module.exports = {
             });
         }
         
-        /**Request body for order API
-         * 
-         * buyer (string)
-         * totalPrice (int)
-         * totalQty (int)
-         * paymentID (string)
-         * orderID (string)
-         * txnHash (string)
-         * tokenIndex (int)
-         * products[i].productLink (string)
-         * products[i].quantity (int)
-         * itemWeight (int)
-         * price (int)
-         * 
-         * data.buyer_addr,
-            data.unique_id,
-            data.total_amount,
-            data.payment_unique_id,
-            data.total_items
-         */
+        
         // const body = req.body;
         const orderBody = {
             buyer_addr: req.body.buyer,
@@ -138,78 +130,103 @@ module.exports = {
 
 
             // Create payment
-            /**
-             * data.order_id,
-                data.order_unique_id,
-                data.buyer_addr,
-                data.amount,
-                data.unique_id,
-                data.network_id,
-                data.asset_id,
-                data.tx_hash
-             */
+            
             const insertId = results.insertId;
-            const paymentBody = {
+            const shippingBody = {
                 order_id: insertId,
                 order_unique_id: req.body.orderID,
                 buyer_addr: req.body.buyer,
-                amount: req.body.totalPrice,
-                unique_id: req.body.paymentID,
-                chain_id: req.body.chainID,
-                asset_id: req.body.tokenIndex,
-                tx_hash: req.body.txnHash
+                phone: req.body.shipping.phone,
+                email: req.body.shipping.email,
+                street: req.body.shipping.street,
+                city: req.body.shipping.city,
+                state: req.body.shipping.state,
+                country: req.body.shipping.country,
+                postal_code: req.body.shipping.postalCode,
             };
-            createPayment(paymentBody, (err, payResults) => {
-                if (err) {
-                    console.log(err);
+            createShippingAddress(shippingBody, (shippingErr, shippingRes) => {
+                if (shippingErr) {
+                    console.log(shippingErr);
                     return res.status(400).json({
                         success: 0,
                         message: 'Database query error'
                     });
                 }
-    
-                if(!payResults){
-                    console.log("payResults: ", payResults);
+
+                if(!shippingRes){
+                    console.log(shippingRes);
                     return res.status(502).json({
                         success: 0,
                         message: 'Invalid response'
                     });
                 }
-
-                const products = req.body.products;
-                async.each(products, (product, callBack) => {
-                    //order_id, product_link, domain, asin, quantity, price
-                    // console.log(product);
-                    const data = {
-                        order_id: insertId,
-                        product_link: product.link,
-                        asin: product.asin,
-                        quantity: product.quantity,
-                        price: product.price
-                    };
-                    createItem(data, (itemErr, itemResult) => {
-                        if(itemErr){
-                            console.log(itemErr);
-                            return callBack(itemErr);
-                        }
-                        return callBack(null);
-                    });
-                }, (err) => {
-                    if(err){
+                
+                const paymentBody = {
+                    order_id: insertId,
+                    order_unique_id: req.body.orderID,
+                    buyer_addr: req.body.buyer,
+                    amount: req.body.totalPrice,
+                    unique_id: req.body.paymentID,
+                    chain_id: req.body.chainID,
+                    asset_id: req.body.tokenIndex,
+                    tx_hash: req.body.txnHash
+                };
+                createPayment(paymentBody, (err, payResults) => {
+                    if (err) {
                         console.log(err);
                         return res.status(400).json({
                             success: 0,
-                            itemErr: 1,
-                            message: "Item error"
+                            message: 'Database query error'
                         });
                     }
-                    return res.status(200).json({
-                        success: 1,
-                        message: "Order placed successfully!"
+        
+                    if(!payResults){
+                        console.log(payResults);
+                        return res.status(502).json({
+                            success: 0,
+                            message: 'Invalid response'
+                        });
+                    }
+    
+                    const products = req.body.products;
+                    async.each(products, (product, callBack) => {
+                                            
+                        const data = {
+                            order_id: insertId,
+                            product_link: product.link,
+                            asin: product.asin,
+                            image: product.image,
+                            title: product.title,
+                            quantity: product.quantity,
+                            price: product.price
+                        };
+                        createItem(data, (itemErr, itemResult) => {
+                            if(itemErr){
+                                console.log(itemErr);
+                                return callBack(itemErr);
+                            }
+                            return callBack(null);
+                        });
+                    }, (err) => {
+                        if(err){
+                            console.log(err);
+                            return res.status(400).json({
+                                success: 0,
+                                itemErr: 1,
+                                message: "Item error"
+                            });
+                        }
+                        return res.status(200).json({
+                            success: 1,
+                            message: "Order placed successfully!"
+                        });
                     });
+    
                 });
 
             });
+
+
 
         });
     },
@@ -229,7 +246,7 @@ module.exports = {
                 });
             }
 
-            const count = results.length;
+            // const count = results.length;
 
             getOrderItems((err, itemResults) => {
                 if(err){

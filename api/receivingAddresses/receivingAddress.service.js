@@ -35,7 +35,7 @@ module.exports = {
     },
     getUserAddress: (id, callBack) => {
         pool.query(
-            `SELECT * FROM orders WHERE user_id = ?`,
+            `SELECT * FROM users_receive_address WHERE user_id = ?`,
             [id],
             (error, results, fields) => {
                 if(error){
@@ -48,7 +48,7 @@ module.exports = {
     },
     getAddressById: (id, callBack) => {
         pool.query(
-            `SELECT * FROM orders WHERE id = ?`,
+            `SELECT * FROM users_receive_address WHERE id = ?`,
             [id],
             (error, results, fields) => {
                 if(error){

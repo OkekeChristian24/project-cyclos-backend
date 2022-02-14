@@ -4,13 +4,16 @@ const validateCreate = [
     body("email", "No email found")
         .exists({checkFalsy: true})
         .not().isEmpty()
-        .isEmail().withMessage("Invalid email address"),
+        .isEmail().withMessage("Invalid email address")
+        .normalizeEmail()
+    ,
 
     body("first_name", "Enter first name")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .trim()
-        .escape(),
+        .escape()
+    ,
     
     body("last_name", "Enter last name")
         .exists({checkFalsy: true})
@@ -45,10 +48,11 @@ const validateEdit = [
         .not().isEmpty()
         .trim()
         .escape()
-        .custom((value, { req }) => {
-            return value == 'active';
-        }
-    ).withMessage("Invalid status")
+        .custom(
+            (value, { req }) => {
+                return value == 'active';
+            }
+        ).withMessage("Invalid status")
 ];
 
 module.exports = {
