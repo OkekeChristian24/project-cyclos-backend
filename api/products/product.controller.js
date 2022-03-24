@@ -7,7 +7,6 @@ dotenv.config({path: './config/config.env'});
 module.exports = {
     getProductData: (req, res) => {
         const domain = req.body.domain ? req.body.domain : "amazon.com"
-        
         // set up the request parameters
         const params = {
         api_key: process.env.API_KEY,

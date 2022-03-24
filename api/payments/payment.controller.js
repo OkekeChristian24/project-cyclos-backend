@@ -91,8 +91,8 @@ module.exports = {
         });
     },
     getPaymentByUser: (req, res) => {
-        const id = req.params.id;
-        getPaymentByUser(id, (err, results) => {
+        const address = req.params.address;
+        getPaymentByUser(address, (err, results) => {
             if (err) {
                 console.log(err);
                 return res.status(400).json({

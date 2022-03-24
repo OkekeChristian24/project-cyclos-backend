@@ -42,21 +42,25 @@ app.use(connectFlash());
 app.use(passport.initialize());
 app.use(passport.session());
 
-
+// if(process.env.NODE_ENV === 'production') {
+//     app.use(express.static('frontend/build'));
+//     app.get('*', (req, res) => res.sendFile(path.resolve(__dirname, 'frontend', 'build', 'index.html')));
+// }
+  
 app.use(cors({ origin: "*" }));
-app.use('/uploads', express.static('uploads'));
+// app.use('/uploads', express.static('uploads'));
 
 // Routing
 app.use('/api/user', require('./api/users/user.router'));
 app.use('/api/admin', require('./api/admin/admin.router'));
 app.use('/api/order', require('./api/orders/order.router'));
 app.use('/api/payment', require('./api/payments/payment.router'));
-
+app.use('/api/fee', require('./api/fees/fee.router'));
 app.use('/api/products', require('./api/products/product.router'));
+app.use('/api/shippings', require('./api/shippingDetails/shippingDetail.router'));
 
 
-// app.use('/api/unsorted', require('./api/unsortedQuotations/unsortedQuotation.router'));
-// app.use('/api/sorted', require('./api/sortedQuotations/sortedQuotation.router'));
+
 // app.use('/api/sorter', require('./api/sorters/sorter.router'));
 
 

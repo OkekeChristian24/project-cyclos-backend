@@ -65,7 +65,6 @@ const validateCreate = [
         .exists()
         .not().isEmpty()
         .trim()
-        .escape()
         .custom((value, { req }) => {
             const txHashRegex = /^0x([A-Fa-f0-9]{64})$/;
             if(txHashRegex.test(value)){
@@ -131,7 +130,6 @@ const validateEdit = [
         .exists()
         .not().isEmpty()
         .trim()
-        .escape()
         .custom((value, { req }) => {
             const txHashRegex = /^0x([A-Fa-f0-9]{64})$/;
             if(txHashRegex.test(value)){

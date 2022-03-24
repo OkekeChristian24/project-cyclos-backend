@@ -3,6 +3,7 @@ const {
     confirmPaymentOnBSC,
     confirmPaymentOnFantom
 } = require("../../paymentContract/confirmPayment");
+const notifyUserWithNodemailer = require("../../sendMail/withNodeMailer");
 const { validationResult } = require('express-validator');
 const { 
     create,
@@ -37,6 +38,7 @@ const {
 
 const { createPayment } = require("../payments/payment.service");
 const convertedAmt = require("../../web3/convertedAmt");
+const checkTotalPrice = require('../../utils/checkTotalPrice');
 
 /**
  * To place an order, we will have to confirm if payment for
@@ -73,12 +75,14 @@ module.exports = {
                 req.body.paymentID,
                 req.body.totalPrice,
                 req.body.chainID,
-                req.body.tokenIndex
+                req.body.tokenIndex,
+                req.body.products,
+                req.body.company
             );
             
             // console.log("txnDetails: ", txnDetails);
             if(!confirmed){
-                console.log("Not confirmed error");
+                console.log("Not confirmed error BSC");
                 return res.status(404).json({
                     success: 0,
                     message: "Invalid transaction"
@@ -91,11 +95,13 @@ module.exports = {
                 req.body.paymentID,
                 req.body.totalPrice,
                 req.body.chainID,
-                req.body.tokenIndex
+                req.body.tokenIndex,
+                req.body.products,
+                req.body.company
             );
 
             if(!confirmed){
-                console.log("Not confirmed error");
+                console.log("Not confirmed error FTM");
                 return res.status(404).json({
                     success: 0,
                     message: "Invalid transaction"
@@ -108,7 +114,6 @@ module.exports = {
                 message: "Invalid chain ID"
             });
         }
-        
         
         // const body = req.body;
         const orderBody = {
@@ -216,9 +221,16 @@ module.exports = {
                                 message: "Item error"
                             });
                         }
+                        
+                        const mailResult = notifyUserWithNodemailer(
+                            req.body.shipping.email,
+                            "Cyclos Order Confirmation",
+                            `You placed an order with ID ${req.body.orderID}`
+                        );
+
                         return res.status(200).json({
                             success: 1,
-                            message: "Order placed successfully!"
+                            message: mailResult ? "Order placed successfully. Check your email!" : "Order placed successfully"
                         });
                     });
     
@@ -344,6 +356,7 @@ module.exports = {
         });
     },
     getOrderById: (req, res) => {
+        
         const id = req.params.id;
         getOrderById(id, (err, results) => {
             if (err) {
