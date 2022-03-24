@@ -1,4 +1,5 @@
 const { body } = require('express-validator');
+const { pending, fulfilled } = require('../constants/txnStatus');
 const {
     txHashRegex,
     validPhoneReg,
@@ -73,19 +74,16 @@ const validateCreate = [
         .exists({checkFalsy: true})
         .not().isEmpty()
         .trim()
-        .escape()
     ,
     body("orderID", "No order id")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .trim()
-        .escape()
     ,
     body("txnHash")
         .exists()
         .not().isEmpty()
         .trim()
-        .escape()
         .custom(
             (value, { req }) => {
                 const txHashRegex = /^0x([A-Fa-f0-9]{64})$/;
@@ -115,7 +113,6 @@ const validateCreate = [
         .exists({checkFalsy: true})
         .not().isEmpty()
         .isURL().withMessage("Invalid product Url")
-        .escape()
     ,
     body("products.*.quantity", "Specify product quantity")
         .exists({checkFalsy: true})
@@ -133,19 +130,16 @@ const validateCreate = [
         .exists({checkFalsy: true})
         .not().isEmpty()
         .trim()
-        .escape()
     ,
     body("products.*.title", "No product title")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .trim()
-        .escape()
     ,
     body("products.*.image", "No product image")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .isURL().withMessage("Invalid image Url")
-        .escape()
     ,
     body("products.*.price", "No product price")
         .exists({checkFalsy: true})
@@ -170,42 +164,36 @@ const validateCreate = [
         .not().isEmpty()
         .trim()
         .matches(validPhoneReg).withMessage("Invalid shipping phone")
-        .escape()
     ,
     body("shipping.street", "Missing shipping street")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .trim()
         .matches(validStreetReg).withMessage("Invalid shipping street")
-        .escape()
     ,
     body("shipping.city", "Missing shipping city")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .trim()
         .matches(validCityReg).withMessage("Invalid shipping street")
-        .escape()
     ,
     body("shipping.state", "Missing shipping state")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .trim()
         .matches(validStateReg).withMessage("Invalid shipping street")
-        .escape()
     ,
     body("shipping.country", "Missing shipping country")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .trim()
         .matches(validCountryReg).withMessage("Invalid shipping street")
-        .escape()
     ,
     body("shipping.postalCode", "Missing shipping postal code")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .trim()
         .matches(validPostalCodeReg).withMessage("Invalid shipping street")
-        .escape()
     
 ];
 
@@ -259,19 +247,16 @@ const validateEdit = [
         .exists({checkFalsy: true})
         .not().isEmpty()
         .trim()
-        .escape()
     ,
     body("orderID", "No order id")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .trim()
-        .escape()
     ,
     body("txnHash")
         .exists()
         .not().isEmpty()
         .trim()
-        .escape()
         .custom(
             (value, { req }) => {
                 if(txHashRegex.test(value)){
@@ -315,19 +300,16 @@ const validateEdit = [
         .exists({checkFalsy: true})
         .not().isEmpty()
         .trim()
-        .escape()
     ,
     body("products.*.title", "No product title")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .trim()
-        .escape()
     ,
     body("products.*.image", "No product image")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .isURL().withMessage("Invalid image Url")
-        .escape()
     ,
     body("products.*.price", "No product price")
         .exists({checkFalsy: true})
@@ -352,42 +334,36 @@ const validateEdit = [
         .not().isEmpty()
         .trim()
         .matches(validPhoneReg).withMessage("Invalid shipping phone")
-        .escape()
     ,
     body("shipping.street", "Missing shipping street")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .trim()
         .matches(validStreetReg).withMessage("Invalid shipping street")
-        .escape()
     ,
     body("shipping.city", "Missing shipping city")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .trim()
         .matches(validCityReg).withMessage("Invalid shipping street")
-        .escape()
     ,
     body("shipping.state", "Missing shipping state")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .trim()
         .matches(validStateReg).withMessage("Invalid shipping street")
-        .escape()
     ,
     body("shipping.country", "Missing shipping country")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .trim()
         .matches(validCountryReg).withMessage("Invalid shipping street")
-        .escape()
     ,
     body("shipping.postalCode", "Missing shipping postal code")
         .exists({checkFalsy: true})
         .not().isEmpty()
         .trim()
         .matches(validPostalCodeReg).withMessage("Invalid shipping street")
-        .escape()
       
 ];
 
@@ -396,9 +372,8 @@ const validateStatusChange = [
         .exists({checkFalsy: true})
         .not().isEmpty()
         .trim()
-        .escape()
         .custom((value, { req }) => {
-            if(value !== "pending"  || value !== "fulfilled"){
+            if(value !== pending  || value !== fulfilled){
                 throw new Error('Invalid status value')
             }
             return true;

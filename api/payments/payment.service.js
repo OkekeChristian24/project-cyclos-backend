@@ -46,10 +46,10 @@ module.exports = {
             }
         );
     },
-    getPaymentByUser: (id, callBack) => {
+    getPaymentByUser: (address, callBack) => {
         pool.query(
-            `SELECT * FROM payments p INNER JOIN orders o ON p.order_id = o.id WHERE o.user_id = ?`,
-            [id],
+            `SELECT * FROM payments p INNER JOIN orders o ON p.order_id = o.id WHERE p.buyer_addr = ?`,
+            [address],
             (error, results, fields) => {
                 if (error) {
                     return callBack(error);

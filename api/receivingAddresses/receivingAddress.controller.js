@@ -70,8 +70,8 @@ module.exports = {
         });
     },
     getUserAddress: (req, res) => {
-        const id = req.params.id;
-        getUserAddress(id, (err, results) => {
+        const address = req.params.address;
+        getUserAddress(address, (err, results) => {
             if (err) {
                 console.log(err);
                 return res.json({

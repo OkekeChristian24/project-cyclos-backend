@@ -4,7 +4,6 @@ const { checkIfAdmin } = require("../../auth/order_validation");
 const { 
     createOrder,
     getOrders,
-    getShopOrders,
     getUserOrders,
     getOrderById,
     updateOrder,
@@ -14,12 +13,14 @@ const {
 const router = require('express').Router();
 const { checkToken } = require('../../auth/token_validation');
 
+// => /order
 router.post('/', validateCreate, createOrder);
 router.get('/', getOrders);
-// router.get('/shop/:id', getShopOrders);
-router.get('/:id', getOrderById);
-router.get('/user/:id', getUserOrders);
+router.get('/id/:id', getOrderById);
+router.get('/user/:address', getUserOrders);
 router.delete('/:id', deleteOrder);
+
+// router.get('/shop/:id', getShopOrders);
 // router.put('/:id', validateEdit, updateOrder);
 
 // For admins

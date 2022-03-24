@@ -13,7 +13,7 @@ const { checkToken } = require('../../auth/token_validation');
 
 router.post('/', validateCreate, createAddress);
 router.get('/', getAddresses);
-router.get('/:id', getAddressById);
-router.get('/user/:id', getUserAddress);
+router.get('/id/:id', getAddressById);
+router.get('/user/:address', getUserAddress);
 router.put('/:id', validateEdit, updateAddress);
 router.delete('/:id', deleteAddress);

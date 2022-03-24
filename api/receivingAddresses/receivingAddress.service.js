@@ -33,10 +33,10 @@ module.exports = {
             }
         );
     },
-    getUserAddress: (id, callBack) => {
+    getUserAddress: (address, callBack) => {
         pool.query(
             `SELECT * FROM users_receive_address WHERE user_id = ?`,
-            [id],
+            [address],
             (error, results, fields) => {
                 if(error){
                     return callBack(error);

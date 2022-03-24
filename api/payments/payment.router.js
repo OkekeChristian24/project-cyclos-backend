@@ -13,8 +13,8 @@ const { checkToken } = require('../../auth/token_validation');
 
 router.post('/', validateCreate, createPayment);
 router.get('/', getPayments);
-router.get('/:id', getPaymentById);
-router.get('/user/:id', getPaymentByUser);
+router.get('/id/:id', getPaymentById);
+router.get('/user/:address', getPaymentByUser);
 router.put('/:id', validateEdit, updatePayment);
 router.delete('/:id', deletePayment);
 

@@ -1,5 +1,5 @@
 const { validationResult } = require('express-validator');
-const nodemailer = require('../../config/nodemailer.config');
+// const nodemailer = require('../../config/nodemailer.config');
 const 
 {
     registerUser,
@@ -79,52 +79,57 @@ module.exports = {
                         message: 'Oops... Something went wrong'
                     });
                 }
+
+                return res.json({
+                    success: 1,
+                    message: 'Registration successful'
+                });
     
                 // Set confirmation code into its table
-                const codeData = {
-                    user_id: RegResults.insertId,
-                    code: token
-                };
-                insertCode(codeData, (err, results) => {
-                    if(err){
-                        console.log(err);
-                        return res.json({
-                            success: 0,
-                            message: 'Database query error'
-                        });
-                    }
-                    if(!results){
-                        return res.json({
-                            success: 0,
-                            message: 'Query error'
-                        });
-                    }
+                // const codeData = {
+                //     user_id: RegResults.insertId,
+                //     code: token
+                // };
+                // insertCode(codeData, (err, results) => {
+                //     if(err){
+                //         console.log(err);
+                //         return res.json({
+                //             success: 0,
+                //             message: 'Database query error'
+                //         });
+                //     }
+                //     if(!results){
+                //         return res.json({
+                //             success: 0,
+                //             message: 'Query error'
+                //         });
+                //     }
     
-                    // Send activation email
-                    nodemailer.sendConfirmationEmail(body.wallet, body.email, token, (info) => {
+                //     // Send activation email
+                //     nodemailer.sendConfirmationEmail(body.wallet, body.email, token, (info) => {
     
-                        // if(emailErr){
-                        //     console.log(emailErr);
-                        //     return res.json({
-                        //         success: 0,
-                        //         message: 'Email: Oops... Something went wrong'
-                        //     });
-                        // }
+                //         // if(emailErr){
+                //         //     console.log(emailErr);
+                //         //     return res.json({
+                //         //         success: 0,
+                //         //         message: 'Email: Oops... Something went wrong'
+                //         //     });
+                //         // }
                         
-                        return res.json({
-                            success: 1,
-                            message: `Wallet registered. Check ${body.email} for verification code.`
-                        });
-                    }).catch((emailErr) => {
-                        if(emailErr){
-                            return res.json({
-                                success: 0,
-                                message: 'Email: Oops... Something went wrong'
-                            });
-                        }
-                    });
+                //         return res.json({
+                //             success: 1,
+                //             message: `Wallet registered. Check ${body.email} for verification code.`
+                //         });
+                //     }).catch((emailErr) => {
+                //         if(emailErr){
+                //             return res.json({
+                //                 success: 0,
+                //                 message: 'Email: Oops... Something went wrong'
+                //             });
+                //         }
+                //     });
                     
-                });
+                // });
     
     
             });

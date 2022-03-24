@@ -1,11 +1,11 @@
 {
-  "name": "mastermind_ecom",
+  "name": "cyclos_ecom",
   "version": "1.0.0",
   "description": "",
   "main": "App.js",
   "scripts": {
     "start": "node app.js",
-    "devStart": "nodemon app.js"
+    "dev": "nodemon app.js"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +20,7 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
+    "ethers": "^5.5.4",
     "express": "^4.17.1",
     "express-mysql-session": "^2.1.7",
     "express-session": "^1.17.2",
