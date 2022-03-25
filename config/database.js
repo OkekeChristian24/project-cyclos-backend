@@ -8,13 +8,15 @@ const host = process.env.HOST;
 const user = process.env.DB_USER;
 const password = process.env.DB_PASSWORD;
 const database = process.env.DB_NAME;
+const dbPort = process.env.DB_PORT;
 
 const dbOptions = {
     connectionLimit : 10,
     host            : host,
     user            : user,
     password        : password,
-    database        : database
+    database        : database,
+    port        	: dbPort
 };
 
 const sessionOptions = {
