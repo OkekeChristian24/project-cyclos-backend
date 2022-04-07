@@ -1,6 +1,6 @@
 
 module.exports = {
-    addressOnFTM: '0xf7FD0dBA3410A28cB3de622d37Ee066C5cBACc6B',
-    addressOnBSC: ''
+    addressOnFTM: '0xb18B3e3967C8dF8c989594a73FE6C29AEBa214d8',
+    addressOnBSC: '0x2268222c31775AE38e1F168b5aB7EE5d133CF737'
 }
 
