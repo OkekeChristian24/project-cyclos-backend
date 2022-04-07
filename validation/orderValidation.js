@@ -9,24 +9,6 @@ const {
     validCountryReg,
     validPostalCodeReg
  } = require("../regex/allRegex");
-/*
-* buyer (string)
-* totalPrice (int)
-* totalQty (int)
-* paymentID (string)
-* orderID (string)
-
-* txnHash (string)
-
-* tokenIndex (int)
-
-* products[i].productLink (string)
-* products[i].quantity (int)
-* itemWeight (int)
-* price (int)
-* shipping: shippingDetails
-
-*/
 
 const validateCreate = [
     body("buyer", "No buyer specified")
@@ -140,6 +122,14 @@ const validateCreate = [
         .exists({checkFalsy: true})
         .not().isEmpty()
         .isURL().withMessage("Invalid image Url")
+    ,
+    body("products.*.color", "No product color")
+        .exists()
+        .trim()
+    ,
+    body("products.*.size", "No product size")
+        .exists()
+        .trim()
     ,
     body("products.*.price", "No product price")
         .exists({checkFalsy: true})
@@ -310,6 +300,14 @@ const validateEdit = [
         .exists({checkFalsy: true})
         .not().isEmpty()
         .isURL().withMessage("Invalid image Url")
+    ,
+    body("products.*.color", "No product color")
+        .exists()
+        .trim()
+    ,
+    body("products.*.size", "No product size")
+        .exists()
+        .trim()
     ,
     body("products.*.price", "No product price")
         .exists({checkFalsy: true})

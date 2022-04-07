@@ -81,7 +81,7 @@ module.exports = {
             );
             
             // console.log("txnDetails: ", txnDetails);
-            if(!confirmed){
+            if(!confirmed.success){
                 console.log("Not confirmed error BSC");
                 return res.status(404).json({
                     success: 0,
@@ -100,7 +100,7 @@ module.exports = {
                 req.body.company
             );
 
-            if(!confirmed){
+            if(!confirmed.success){
                 console.log("Not confirmed error FTM");
                 return res.status(404).json({
                     success: 0,
@@ -119,10 +119,11 @@ module.exports = {
         const orderBody = {
             buyer_addr: req.body.buyer,
             unique_id: req.body.orderID,
-            total_amount: req.body.totalPrice,
+            total_amount: confirmed.totalPriceToStore,
             payment_unique_id: req.body.paymentID,
             total_items: req.body.totalQty
         };
+        console.log("Body payment ID: ", req.body.paymentID);
 
         create(orderBody, (err, results) => {
             if (err) {
@@ -201,6 +202,8 @@ module.exports = {
                             product_link: product.link,
                             asin: product.asin,
                             image: product.image,
+                            color: product.color,
+                            size: product.size,
                             title: product.title,
                             quantity: product.quantity,
                             price: product.price

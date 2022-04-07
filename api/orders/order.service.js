@@ -22,7 +22,7 @@ module.exports = {
     getOrders: callBack => {
         pool.query(
             // `select orders.id, users.username, products.item_name, categories.category_name, shops.shop_name, products.image, orders.quantity, products.price, products.duration, orders.created_at from orders inner join users on orders.user_id = users.id inner join products on orders.product_id = products.id inner join shops on products.shop_id = shops.id inner join categories on products.category_id = categories.id`,
-            `SELECT * FROM orders`,
+            `SELECT * FROM orders ORDER BY created_at`,
             [],
             (error, results, fields) => {
                 if (error) {
@@ -47,7 +47,7 @@ module.exports = {
     },
     getUserOrders: (address, callBack) => {
         pool.query(
-            `SELECT * FROM orders o INNER JOIN payments p ON p.order_id = o.id WHERE o.buyer_addr = ?`,
+            `SELECT * FROM orders o INNER JOIN payments p ON p.order_id = o.id WHERE o.buyer_addr = ? ORDER BY o.created_at DESC`,
             [address],
             (error, results, fields) => {
                 if(error){

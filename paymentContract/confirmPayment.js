@@ -10,19 +10,19 @@ const confirmPaymentOnFantom = async(buyer, orderID, paymentID, totalPrice, chai
         const txnPrice = convertedAmt(paymentDetails.totalPrice, fantomHexToNumString(chainID), tokenIndex)
         const isValidPrice = await checkTotalPrice(txnPrice, products, company);
         if(!isValidPrice){
-            return false;
+            return {success: false, totalPriceToStore: txnPrice};
         };
         
         if(
             paymentID !== String(paymentDetails.paymentID)
         ){
-            return false;
+            return {success: false, totalPriceToStore: txnPrice};
         }
-        return true;
+        return {success: true, totalPriceToStore: txnPrice};
         
     } catch (error) {
         console.log(error);
-        return false;
+        return {success: false, totalPriceToStore: txnPrice};
     }
 };
 
@@ -30,22 +30,23 @@ const confirmPaymentOnFantom = async(buyer, orderID, paymentID, totalPrice, chai
 const confirmPaymentOnBSC = async(buyer, orderID, paymentID, totalPrice, chainID, tokenIndex, products, company) => {
     try {
         const paymentDetails = await BSCcontract.methods.getTransactionDetails(buyer, orderID).call();
-        const txnPrice = convertedAmt(paymentDetails.totalPrice, bscHexToNumString(chainID), tokenIndex)
+        const txnPrice = convertedAmt(paymentDetails.totalPrice, bscHexToNumString(chainID), tokenIndex);
+        
         const isValidPrice = await checkTotalPrice(txnPrice, products, company);    
         if(!isValidPrice){
-            return false
+            return {success: false, totalPriceToStore: txnPrice};
         };
         
         if(
             paymentID !== String(paymentDetails.paymentID) 
         ){
-            return false;
+            return {success: false, totalPriceToStore: txnPrice};
         }
-        return true;
+        return {success: true, totalPriceToStore: txnPrice};
         
     } catch (error) {
         console.log(error);
-        return false;
+        return {success: false, totalPriceToStore: txnPrice};
     }
 };
 

@@ -7,13 +7,17 @@ const checkTotalPrice = (totalPricePaid, products, company) => {
             if (error) {
                 console.log(error);
                 reject(false);
+                return;
             }
             if (!results) {
                 reject(false);
+                return;
             }
             if(results.length === 0){
                 reject(false);
+                return;
             }
+            console.log("checkTotalPrice, results: ", results);
     
             let priceSum = 0;
             const chargePercent = results[0].charge_percent;
@@ -24,6 +28,7 @@ const checkTotalPrice = (totalPricePaid, products, company) => {
             }
             if(totalPricePaid >= calculate(chargePercent, taxPercent, priceSum)){
                 resolve(true);
+                return;
             }
             reject(false);
         });
