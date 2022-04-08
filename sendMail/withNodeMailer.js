@@ -47,7 +47,7 @@ let message = {
 const notifyUserWithNodemailer = (userEmail, subject, message) => {
     
     const mailOptions = {
-        from: process.env.MAIL_USER,
+        from: "Cyclos Shop",
         to: userEmail,
         subject,
         html: `<div>${message}</div>`
