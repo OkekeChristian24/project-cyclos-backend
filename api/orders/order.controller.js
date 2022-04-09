@@ -66,7 +66,6 @@ module.exports = {
         /**
          * Confirm if payment was made on the blockchain
          */
-        // console.log("Request products: ", req.body.products);
         let confirmed;
         if(req.body.chainID === 56){
             confirmed = await confirmPaymentOnBSC(
@@ -123,7 +122,6 @@ module.exports = {
             payment_unique_id: req.body.paymentID,
             total_items: req.body.totalQty
         };
-        console.log("Body payment ID: ", req.body.paymentID);
 
         create(orderBody, (err, results) => {
             if (err) {

@@ -123,12 +123,10 @@ const validateCreate = [
         .not().isEmpty()
         .isURL().withMessage("Invalid image Url")
     ,
-    body("products.*.color", "No product color")
-        .exists()
+    body("products.*.color")
         .trim()
     ,
-    body("products.*.size", "No product size")
-        .exists()
+    body("products.*.size")
         .trim()
     ,
     body("products.*.price", "No product price")
@@ -302,11 +300,9 @@ const validateEdit = [
         .isURL().withMessage("Invalid image Url")
     ,
     body("products.*.color", "No product color")
-        .exists()
         .trim()
     ,
     body("products.*.size", "No product size")
-        .exists()
         .trim()
     ,
     body("products.*.price", "No product price")
