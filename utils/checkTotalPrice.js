@@ -17,7 +17,6 @@ const checkTotalPrice = (totalPricePaid, products, company) => {
                 reject(false);
                 return;
             }
-            console.log("checkTotalPrice, results: ", results);
     
             let priceSum = 0;
             const chargePercent = results[0].charge_percent;
