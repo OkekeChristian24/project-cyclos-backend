@@ -5,9 +5,9 @@ const checkTotalPrice = require("../utils/checkTotalPrice");
 
 
 const confirmPaymentOnFantom = async(buyer, orderID, paymentID, totalPrice, chainID, tokenIndex, products, company) => {
+    const txnPrice = convertedAmt(paymentDetails.totalPrice, fantomHexToNumString(chainID), tokenIndex)
     try {
         const paymentDetails = await FTMcontract.methods.getTransactionDetails(buyer, orderID).call();
-        const txnPrice = convertedAmt(paymentDetails.totalPrice, fantomHexToNumString(chainID), tokenIndex)
         const isValidPrice = await checkTotalPrice(txnPrice, products, company);
         if(!isValidPrice){
             return {success: false, totalPriceToStore: txnPrice};
@@ -28,9 +28,9 @@ const confirmPaymentOnFantom = async(buyer, orderID, paymentID, totalPrice, chai
 
 
 const confirmPaymentOnBSC = async(buyer, orderID, paymentID, totalPrice, chainID, tokenIndex, products, company) => {
+    const txnPrice = convertedAmt(paymentDetails.totalPrice, bscHexToNumString(chainID), tokenIndex);
     try {
         const paymentDetails = await BSCcontract.methods.getTransactionDetails(buyer, orderID).call();
-        const txnPrice = convertedAmt(paymentDetails.totalPrice, bscHexToNumString(chainID), tokenIndex);
         
         const isValidPrice = await checkTotalPrice(txnPrice, products, company);    
         if(!isValidPrice){
