@@ -1,4 +1,4 @@
-const { FTMcontract, BSCcontract } = require("./contracts");
+const { FTMcontract, BSCcontract, Polygoncontract } = require("./contracts");
 const convertedAmt = require("../web3/convertedAmt");
 const { fantomHexToNumString, bscHexToNumString } = require("../web3/hexToNumString");
 const checkTotalPrice = require("../utils/checkTotalPrice");
@@ -9,7 +9,6 @@ const confirmPaymentOnFantom = async(buyer, orderID, paymentID, totalPrice, chai
     try {
         const paymentDetails = await FTMcontract.methods.getTransactionDetails(buyer, orderID).call();
         txnPrice = convertedAmt(paymentDetails.totalPrice, fantomHexToNumString(chainID), tokenIndex)
-        console.log("txnPrice: ", txnPrice);
         
         const isValidPrice = await checkTotalPrice(txnPrice, products, company);
         if(!isValidPrice){
@@ -25,7 +24,6 @@ const confirmPaymentOnFantom = async(buyer, orderID, paymentID, totalPrice, chai
         
     } catch (error) {
         console.log(error);
-        console.log("txnPrice: ", txnPrice);
         return {success: false, totalPriceToStore: txnPrice};
     }
 };
@@ -36,7 +34,6 @@ const confirmPaymentOnBSC = async(buyer, orderID, paymentID, totalPrice, chainID
     try {
         const paymentDetails = await BSCcontract.methods.getTransactionDetails(buyer, orderID).call();
         txnPrice = convertedAmt(paymentDetails.totalPrice, bscHexToNumString(chainID), tokenIndex);
-        console.log("txnPrice: ", txnPrice);
         
         const isValidPrice = await checkTotalPrice(txnPrice, products, company);    
         if(!isValidPrice){
@@ -56,7 +53,34 @@ const confirmPaymentOnBSC = async(buyer, orderID, paymentID, totalPrice, chainID
     }
 };
 
+const confirmPaymentOnPolygon = async(buyer, orderID, paymentID, totalPrice, chainID, tokenIndex, products, company) => {
+    let txnPrice;
+    try {
+        const paymentDetails = await Polygoncontract.methods.getTransactionDetails(buyer, orderID).call();
+        txnPrice = convertedAmt(paymentDetails.totalPrice, bscHexToNumString(chainID), tokenIndex);
+        
+        const isValidPrice = await checkTotalPrice(txnPrice, products, company);    
+        if(!isValidPrice){
+            return {success: false, totalPriceToStore: txnPrice};
+        };
+        
+        if(
+            paymentID !== String(paymentDetails.paymentID) 
+        ){
+            return {success: false, totalPriceToStore: txnPrice};
+        }
+        return {success: true, totalPriceToStore: txnPrice};
+        
+    } catch (error) {
+        console.log(error);
+        return {success: false, totalPriceToStore: txnPrice};
+    }
+};
+
+
+
 module.exports = {
     confirmPaymentOnBSC,
-    confirmPaymentOnFantom
+    confirmPaymentOnFantom,
+    confirmPaymentOnPolygon
 };

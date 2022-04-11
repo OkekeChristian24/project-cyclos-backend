@@ -87,26 +87,28 @@ module.exports = {
                     message: "Invalid transaction"
                 });
             }
-        }else if(req.body.chainID === 250){
-            confirmed = await confirmPaymentOnFantom(
-                req.body.buyer,
-                req.body.orderID,
-                req.body.paymentID,
-                req.body.totalPrice,
-                req.body.chainID,
-                req.body.tokenIndex,
-                req.body.products,
-                req.body.company
-            );
+        }
+        // else if(req.body.chainID === 250){
+        //     confirmed = await confirmPaymentOnFantom(
+        //         req.body.buyer,
+        //         req.body.orderID,
+        //         req.body.paymentID,
+        //         req.body.totalPrice,
+        //         req.body.chainID,
+        //         req.body.tokenIndex,
+        //         req.body.products,
+        //         req.body.company
+        //     );
 
-            if(!confirmed.success){
-                console.log("Not confirmed error FTM");
-                return res.status(404).json({
-                    success: 0,
-                    message: "Invalid transaction"
-                });
-            }
-        }else{
+        //     if(!confirmed.success){
+        //         console.log("Not confirmed error FTM");
+        //         return res.status(404).json({
+        //             success: 0,
+        //             message: "Invalid transaction"
+        //         });
+        //     }
+        // }
+        else{
             console.log("Invalid chain error");
             return res.status(404).json({
                 success: 0,
