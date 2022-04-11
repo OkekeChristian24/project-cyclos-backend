@@ -1,8 +1,10 @@
 const ethers = require("ethers");
 
-const verifyMessage = async ( message, address, signature ) => {
+const verifyMessage = ( message, address, signature ) => {
     try {
-      const signerAddr = await ethers.utils.verifyMessage(message, signature);
+      const signerAddr = ethers.utils.verifyMessage(message, signature);
+      console.log("signer addr: ", signerAddr);
+      console.log("sent addr: ", address);
       if (signerAddr !== address) {
         return false;
       }

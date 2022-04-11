@@ -1,6 +1,7 @@
 
 module.exports = {
-    addressOnFTM: '0xb18B3e3967C8dF8c989594a73FE6C29AEBa214d8',
-    addressOnBSC: '0x2268222c31775AE38e1F168b5aB7EE5d133CF737'
+    addressOnFTM: '',
+    addressOnBSC: '0x2683D33da0B1c182bd8c2D46C9C9B7F51051a54D',
+    addressOnPolygon: ''
 }
 
