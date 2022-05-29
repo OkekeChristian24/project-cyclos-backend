@@ -12,12 +12,14 @@ const confirmPaymentOnFantom = async(buyer, orderID, paymentID, totalPrice, chai
         
         const isValidPrice = await checkTotalPrice(txnPrice, products, company);
         if(!isValidPrice){
+            console.log('Total price not valid');
             return {success: false, totalPriceToStore: txnPrice};
         };
         
         if(
             paymentID !== String(paymentDetails.paymentID)
         ){
+            console.log('Payment ID not valid');
             return {success: false, totalPriceToStore: txnPrice};
         }
         return {success: true, totalPriceToStore: txnPrice};
@@ -34,21 +36,26 @@ const confirmPaymentOnBSC = async(buyer, orderID, paymentID, totalPrice, chainID
     try {
         const paymentDetails = await BSCcontract.methods.getTransactionDetails(buyer, orderID).call();
         txnPrice = convertedAmt(paymentDetails.totalPrice, bscHexToNumString(chainID), tokenIndex);
-        
+        // console.log('totalPrice: ', totalPrice);
+        // console.log('txnPrice: ', txnPrice);
+        // console.log('paymentID: ', paymentID);
+        // console.log('paymentDetails.paymentID: ', paymentDetails.paymentID);
         const isValidPrice = await checkTotalPrice(txnPrice, products, company);    
         if(!isValidPrice){
+            console.log('Total price not valid');
             return {success: false, totalPriceToStore: txnPrice};
         };
         
         if(
-            paymentID !== String(paymentDetails.paymentID) 
+            paymentID !== String(paymentDetails.paymentID)
         ){
+            console.log('Payment ID not valid');
             return {success: false, totalPriceToStore: txnPrice};
         }
         return {success: true, totalPriceToStore: txnPrice};
         
     } catch (error) {
-        console.log(error);
+        console.log('confirmPaymentOnBSC error: ', error);
         return {success: false, totalPriceToStore: txnPrice};
     }
 };

@@ -1,4 +1,5 @@
 const { getFeesByCompany } = require("../api/fees/fee.service");
+const { PRECISION_FACTOR } = require("./bignum");
 const  calculate = require("./calculate");
 
 const checkTotalPrice = (totalPricePaid, products, company) => {
@@ -23,9 +24,9 @@ const checkTotalPrice = (totalPricePaid, products, company) => {
             const taxPercent = results[0].tax_percent;
     
             for(let i=0; i<products.length; i++){
-                priceSum += products[i].price;
+                priceSum = priceSum + (products[i].price * PRECISION_FACTOR);
             }
-            if(totalPricePaid >= calculate(chargePercent, taxPercent, priceSum)){
+            if(Number(totalPricePaid) >= Number(calculate(chargePercent, taxPercent, (priceSum/PRECISION_FACTOR)))){
                 resolve(true);
                 return;
             }
