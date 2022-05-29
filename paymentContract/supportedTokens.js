@@ -31,6 +31,9 @@ const supportedTokens = {
     //         decimals: 18
     //     }
     // ],
+    //
+    //Test on BSC = 0x771E49134e4b12132bA0bFE259E465b4307D5D7C
+    //Main on BSC = 0x55d398326f99059fF775485246999027B3197955
     56: [
         {
             index: 1,

@@ -10,6 +10,7 @@ const connectFlash = require('connect-flash');
 const path = require("path");
 const { sessionStore } = require('./config/database');
 
+
 // Load config
 dotenv.config({path: './config/config.env'});
 
