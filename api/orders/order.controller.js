@@ -1,4 +1,5 @@
 const async = require('async');
+const cluster = require('cluster');
 const {
     confirmPaymentOnBSC,
     confirmPaymentOnFantom
@@ -279,7 +280,6 @@ module.exports = {
                     const products = itemResults.filter(item => item.order_id === results[i].id);
                     orderResults[i].products = products;
                 }
-
                 res.status(200).json({
                     success: 1,
                     data: orderResults
