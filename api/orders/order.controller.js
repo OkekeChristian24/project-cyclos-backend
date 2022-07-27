@@ -40,6 +40,9 @@ const {
 const { createPayment } = require("../payments/payment.service");
 const convertedAmt = require("../../web3/convertedAmt");
 const checkTotalPrice = require('../../utils/checkTotalPrice');
+const { getFulfillersCount } = require('../../otherServices/fulfiller.service');
+const { createOrderFulfiller } = require('../../otherServices/orderFulfillers.service');
+const generateRadomInteger = require('../../utils/generateRandomInt');
 
 /**
  * To place an order, we will have to confirm if payment for
@@ -136,8 +139,7 @@ module.exports = {
             }
 
 
-            // Create payment
-            
+            // Create shipping
             const insertId = results.insertId;
             const shippingBody = {
                 order_id: insertId,
@@ -167,78 +169,127 @@ module.exports = {
                         message: 'Invalid response'
                     });
                 }
+
                 
-                const paymentBody = {
-                    order_id: insertId,
-                    order_unique_id: req.body.orderID,
-                    buyer_addr: req.body.buyer,
-                    amount: req.body.totalPrice,
-                    unique_id: req.body.paymentID,
-                    chain_id: req.body.chainID,
-                    asset_id: req.body.tokenIndex,
-                    tx_hash: req.body.txnHash
-                };
-                createPayment(paymentBody, (err, payResults) => {
-                    if (err) {
-                        console.log(err);
+                //Create order fulfiller
+                getFulfillersCount((countErr, countResults) => {
+                    if(countErr){
+                        console.log(countErr);
                         return res.status(400).json({
                             success: 0,
                             message: 'Database query error'
                         });
                     }
-        
-                    if(!payResults){
-                        console.log(payResults);
+
+                    if(!countResults){
+                        console.log(countResults);
                         return res.status(502).json({
                             success: 0,
                             message: 'Invalid response'
                         });
                     }
-    
-                    const products = req.body.products;
-                    async.each(products, (product, callBack) => {
-                                            
-                        const data = {
-                            order_id: insertId,
-                            product_link: product.link,
-                            asin: product.asin,
-                            image: product.image,
-                            color: product.color,
-                            size: product.size,
-                            title: product.title,
-                            quantity: product.quantity,
-                            price: product.price
-                        };
-                        createItem(data, (itemErr, itemResult) => {
-                            if(itemErr){
-                                console.log(itemErr);
-                                return callBack(itemErr);
-                            }
-                            return callBack(null);
-                        });
-                    }, (err) => {
-                        if(err){
-                            console.log(err);
+                    
+                    const orderFulfillerData = {
+                        order_id: insertId,
+                        fulfiller_id: generateRadomInteger(1, countResults[0].count),
+                        show_item: 1
+                    };
+                    createOrderFulfiller(orderFulfillerData, (orderFulfillerErr, orderFulfillerRes) => {
+                        if(orderFulfillerErr){
+                            console.log(orderFulfillerErr);
                             return res.status(400).json({
                                 success: 0,
-                                itemErr: 1,
-                                message: "Item error"
+                                message: 'Database query error'
                             });
                         }
-                        
-                        const mailResult = notifyUserWithNodemailer(
-                            req.body.shipping.email,
-                            "Cyclos Order Confirmation",
-                            `You placed an order with ID ${req.body.orderID}`
-                        );
+                        if(!orderFulfillerRes){
+                            console.log(orderFulfillerRes);
+                            return res.status(502).json({
+                                success: 0,
+                                message: 'Invalid response'
+                            });
+                        }
 
-                        return res.status(200).json({
-                            success: 1,
-                            message: mailResult ? "Order placed successfully. Check your email!" : "Order placed successfully"
+                        // Create payment
+                        const paymentBody = {
+                            order_id: insertId,
+                            order_unique_id: req.body.orderID,
+                            buyer_addr: req.body.buyer,
+                            amount: req.body.totalPrice,
+                            unique_id: req.body.paymentID,
+                            chain_id: req.body.chainID,
+                            asset_id: req.body.tokenIndex,
+                            tx_hash: req.body.txnHash
+                        };
+                        createPayment(paymentBody, (err, payResults) => {
+                            if (err) {
+                                console.log(err);
+                                return res.status(400).json({
+                                    success: 0,
+                                    message: 'Database query error'
+                                });
+                            }
+                
+                            if(!payResults){
+                                console.log(payResults);
+                                return res.status(502).json({
+                                    success: 0,
+                                    message: 'Invalid response'
+                                });
+                            }
+            
+                            const products = req.body.products;
+                            async.each(products, (product, callBack) => {
+                                                    
+                                const data = {
+                                    order_id: insertId,
+                                    product_link: product.link,
+                                    asin: product.asin,
+                                    image: product.image,
+                                    color: product.color,
+                                    size: product.size,
+                                    title: product.title,
+                                    quantity: product.quantity,
+                                    price: product.price
+                                };
+                                createItem(data, (itemErr, itemResult) => {
+                                    if(itemErr){
+                                        console.log(itemErr);
+                                        return callBack(itemErr);
+                                    }
+                                    return callBack(null);
+                                });
+                            }, (err) => {
+                                if(err){
+                                    console.log(err);
+                                    return res.status(400).json({
+                                        success: 0,
+                                        itemErr: 1,
+                                        message: "Item error"
+                                    });
+                                }
+                                
+                                const mailResult = notifyUserWithNodemailer(
+                                    req.body.shipping.email,
+                                    "Cyclos Order Confirmation",
+                                    `You placed an order with ID ${req.body.orderID}`
+                                );
+        
+                                return res.status(200).json({
+                                    success: 1,
+                                    message: mailResult ? "Order placed successfully. Check your email!" : "Order placed successfully"
+                                });
+                            });
+            
                         });
+
+                        
                     });
-    
+
                 });
+
+
+
 
             });
 
