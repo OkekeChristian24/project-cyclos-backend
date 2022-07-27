@@ -35,7 +35,7 @@ if(cluster.isMaster){
     // Body parser
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
-    
+
     // Session setup
     app.use(session({
         secret: process.env.SESSION_SECRET,
@@ -44,7 +44,7 @@ if(cluster.isMaster){
         store: sessionStore,
         cookie: {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'PRODUCTION',
+            secure: process.env.NODE_ENV === 'production',
             maxAge: 1000 * 60 * 24 // 86400000 1 day
         }
     }));
